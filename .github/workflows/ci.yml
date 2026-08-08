@@ -17,8 +17,7 @@ jobs:
 
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 10
+        # version comes from package.json packageManager (pnpm@10.14.0)
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -27,9 +26,9 @@ jobs:
           cache: pnpm
 
       - name: Install
-        run: FORMOSS_SKIP_PREPARE=1 pnpm install --prefer-offline --config.minimumReleaseAge=0
+        run: SEALMOSS_SKIP_PREPARE=1 pnpm install --prefer-offline --config.minimumReleaseAge=0
 
-      - name: Build Moss + Formoss
+      - name: Build Moss + Sealmoss
         run: |
           bash scripts/setup-moss.sh
           pnpm build
