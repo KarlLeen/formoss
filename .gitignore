@@ -1,0 +1,14 @@
+node_modules
+dist
+**/dist
+*.tsbuildinfo
+.DS_Store
+verified-capability.json
+failed-run.json
+.env
+.env.*
+coverage
+packages/web/dist
+packages/core/dist-test
+packages/*/dist
+demos/fixtures/*-captured.json

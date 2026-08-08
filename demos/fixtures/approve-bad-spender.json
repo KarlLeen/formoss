@@ -1,0 +1,48 @@
+{
+  "kind": "simulate_result",
+  "skipAction": true,
+  "capability": {
+    "kind": "capability",
+    "protocol": "kuru",
+    "method": "swap",
+    "params": {
+      "tokenIn": "0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A",
+      "tokenOut": "0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
+      "amountIn": "0.01",
+      "slippage": 50
+    },
+    "children": [
+      {
+        "kind": "capability",
+        "protocol": "erc20",
+        "method": "approve",
+        "params": {
+          "token": "0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A",
+          "spender": "0x1111111111111111111111111111111111111111",
+          "amount": "10000000000000000"
+        },
+        "children": []
+      }
+    ]
+  },
+  "simulate": {
+    "warnings": [],
+    "texts": [
+      "ERC20 Approval: 0xcccccccccccccccccccccccccccccccccccccccc approved 0x1111111111111111111111111111111111111111 for 10000000000000000 0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A",
+      "ERC20 Transfer: 10000000000000000 0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A from 0xcccccccccccccccccccccccccccccccccccccccc to 0xd651346d7c789536ebf06dc72ae3c8502cd695cc",
+      "Kuru Swap: 10000000000000000 0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A to 223 0x754704Bc059F8C67012fEd69BC8A327a5aafb603 by 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+      "ERC20 Transfer: 223 0x754704bc059f8c67012fed69bc8a327a5aafb603 from 0xd651346d7c789536ebf06dc72aE3C8502cd695CC to 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+    ],
+    "protocol": "kuru",
+    "method": "swap",
+    "receiptOutcome": {
+      "operation": "swap",
+      "protocol": "kuru",
+      "sender": "0xcccccccccccccccccccccccccccccccccccccccc",
+      "tokenIn": "0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A",
+      "tokenOut": "0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
+      "amountIn": "10000000000000000",
+      "amountOut": "223"
+    }
+  }
+}

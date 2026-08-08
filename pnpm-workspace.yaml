@@ -1,0 +1,5 @@
+packages:
+  - packages/*
+  # Local Moss checkout — avoids flaky npm registry fetches for @themoss/*
+  - vendor/moss/packages/*
+  - vendor/moss/packages/protocols/*

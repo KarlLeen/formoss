@@ -1,0 +1,8 @@
+{
+  "protocol": "wmon",
+  "method": "wrap",
+  "account": "0xcccccccccccccccccccccccccccccccccccccccc",
+  "params": {
+    "amount": "0.01"
+  }
+}

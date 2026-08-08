@@ -1,0 +1,32 @@
+{
+  "kind": "simulate_result",
+  "skipAction": true,
+  "capability": {
+    "kind": "fixture-capability",
+    "note": "offline align demo only — not a real Moss tree"
+  },
+  "simulate": {
+    "warnings": [],
+    "texts": [
+      "ERC20 Transfer: 10000000000000000 native from 0xcccccccccccccccccccccccccccccccccccccccc to 0xd651346d7c789536ebf06dc72ae3c8502cd695cc",
+      "ERC20 Transfer: 10000000000000000 native from 0xd651346d7c789536ebf06dc72ae3c8502cd695cc to 0x122c0d8683cab344163fb73e28e741754257e3fa",
+      "Flip Order Updated: order 166526 has size 676926560121791 emitted by 0x122c0d8683cab344163fb73e28e741754257e3fa",
+      "Trade Event: 1000000000 at 22480000000000000 emitted by 0x122c0d8683cab344163fb73e28e741754257e3fa",
+      "ERC20 Transfer: 223 0x754704bc059f8c67012fed69bc8a327a5aafb603 from 0x2A68ba1833cDf93fa9Da1EEbd7F46242aD8E90c5 to 0xd651346d7c789536ebf06dc72aE3C8502cd695CC",
+      "ERC20 Transfer: 10000000000000000 native from 0x122c0d8683cab344163fb73e28e741754257e3fa to 0x2a68ba1833cdf93fa9da1eebd7f46242ad8e90c5",
+      "Kuru Swap: 10000000000000000 native to 223 0x754704Bc059F8C67012fEd69BC8A327a5aafb603 by 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC",
+      "ERC20 Transfer: 223 0x754704bc059f8c67012fed69bc8a327a5aafb603 from 0xd651346d7c789536ebf06dc72aE3C8502cd695CC to 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+    ],
+    "protocol": "kuru",
+    "method": "swap",
+    "receiptOutcome": {
+      "operation": "swap",
+      "protocol": "kuru",
+      "sender": "0xcccccccccccccccccccccccccccccccccccccccc",
+      "tokenIn": "native",
+      "tokenOut": "0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
+      "amountIn": "10000000000000000",
+      "amountOut": "223"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "protocol": "kuru",
+  "method": "swap",
+  "account": "0xcccccccccccccccccccccccccccccccccccccccc",
+  "params": {
+    "tokenIn": "native",
+    "tokenOut": "0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
+    "amountIn": "0.01",
+    "slippage": 50
+  },
+  "expect": {
+    "recipient": "0x1111111111111111111111111111111111111111"
+  }
+}

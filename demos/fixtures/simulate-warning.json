@@ -1,0 +1,24 @@
+{
+  "kind": "simulate_result",
+  "skipAction": true,
+  "simulate": {
+    "warnings": [
+      "Formoss demo warning: injected for reproducible exit 2 (Agents must not ignore Warnings)"
+    ],
+    "texts": [
+      "ERC20 Transfer: 10000000000000000 native from 0xcccccccccccccccccccccccccccccccccccccccc to 0xd651346d7c789536ebf06dc72ae3c8502cd695cc",
+      "Kuru Swap: 10000000000000000 native to 223 0x754704Bc059F8C67012fEd69BC8A327a5aafb603 by 0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC"
+    ],
+    "protocol": "kuru",
+    "method": "swap",
+    "receiptOutcome": {
+      "operation": "swap",
+      "protocol": "kuru",
+      "sender": "0xcccccccccccccccccccccccccccccccccccccccc",
+      "tokenIn": "native",
+      "tokenOut": "0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
+      "amountIn": "10000000000000000",
+      "amountOut": "223"
+    }
+  }
+}

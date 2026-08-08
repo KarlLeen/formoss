@@ -1,0 +1,25 @@
+{
+  "name": "formoss",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@10.14.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r --filter @formoss/core --filter @formoss/cli --filter @formoss/web run build",
+    "typecheck": "pnpm -r run typecheck",
+    "test": "pnpm --filter @formoss/core test",
+    "formoss": "node packages/cli/dist/cli.js",
+    "web": "pnpm --filter @formoss/web dev",
+    "demo": "node packages/cli/dist/cli.js run --intent demos/swap-mon-usdc.json",
+    "demo:warning": "node packages/cli/dist/cli.js run --intent demos/swap-mon-usdc.json --fixture demos/fixtures/simulate-warning.json --fail-out failed-run.json",
+    "demo:offline": "node packages/cli/dist/cli.js run --intent demos/swap-mon-usdc.json --fixture demos/fixtures/kuru-swap-ok.json",
+    "demo:approve-bad": "node packages/cli/dist/cli.js run --intent demos/approve-bad-spender.json --fixture demos/fixtures/approve-bad-spender.json --fail-out failed-run.json",
+    "demo:min-out": "node packages/cli/dist/cli.js run --intent demos/bad-min-out.json --fixture demos/fixtures/kuru-swap-ok.json --fail-out failed-run.json",
+    "capture:kuru": "node packages/cli/dist/cli.js capture --intent demos/swap-mon-usdc.json --out demos/fixtures/kuru-swap-captured.json"
+  },
+  "devDependencies": {
+    "typescript": "~5.9.0"
+  }
+}
