@@ -5,20 +5,51 @@ export {
   type AlignCheck,
   type AlignResult,
 } from "./align.js";
-export { walkApproves, type ApproveNode } from "./capabilityWalk.js";
+export {
+  walkApproves,
+  walkKuruSwapRoot,
+  type ApproveNode,
+  type KuruSwapTreeParams,
+} from "./capabilityWalk.js";
+export {
+  assertAlignRulesCoverProtocols,
+  REQUIRED_PROTOCOL_METHODS,
+} from "./rules/coverage.js";
 export {
   captureFixture,
   evidenceToFixture,
   stripCapabilitySkeleton,
 } from "./capture.js";
 export {
+  diffFixtures,
+  type FixtureDiff,
+} from "./fixtureDiff.js";
+export {
+  isCapabilitySkeleton,
+  parseKuruSwapOutcome,
+  parseWmonOutcome,
+  type CapabilitySkeleton,
+  type KuruSwapOutcome,
+  type TransactionSkeleton,
+  type WmonOutcome,
+} from "./mossTypes.js";
+export {
+  matchWhen,
+  type AlignWhen,
+  type AlignContext,
+  type AlignRule,
+} from "./rules/types.js";
+export {
   buildEnvelope,
   canonicalJSON,
   computeEnvelopeDigest,
-  resolveFormossVersion,
+  resolveSealmossVersion,
   resolveMossVersions,
+  verifyEnvelope,
   type EnvelopeDigest,
   type VerificationEnvelope,
+  type VerifyEnvelopeOptions,
+  type VerifyEnvelopeResult,
 } from "./envelope.js";
 export {
   parsePipelineFixture,
@@ -54,7 +85,7 @@ export {
   rpcRetryConfig,
   withRetry,
 } from "./retry.js";
-export { ALIGN_RULES, type AlignContext, type AlignRule } from "./rules/index.js";
+export { ALIGN_RULES } from "./rules/index.js";
 export {
   findTokenOutTransferTo,
   parseApprovalTexts,
@@ -63,5 +94,7 @@ export {
   textsIncludeAddress,
   textsIncludeAmount,
   textsIncludeToken,
+  type ParsedKuruSwapText,
 } from "./textMatch.js";
+
 export type { PipelineResult, PipelineStep, PipelineStepStatus } from "./types.js";

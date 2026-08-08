@@ -12,6 +12,7 @@ export type PresentInput = {
   texts: readonly string[];
   capability: unknown | null;
   warnings: readonly string[];
+  receiptOutcome?: unknown;
   error?: string;
   verbose?: boolean;
 };
@@ -33,6 +34,7 @@ export function present(input: PresentInput): PresentOutput {
     warnings: input.warnings,
     align: input.align,
     capability: input.capability,
+    receiptOutcome: input.receiptOutcome,
     error: input.error,
   });
   return {
@@ -61,7 +63,7 @@ export function formatSummary(
   options: { verbose: boolean },
 ): string {
   const lines: string[] = [];
-  lines.push("# Formoss verification report");
+  lines.push("# Sealmoss verification report");
   lines.push("");
   lines.push(
     `envelope: **${input.envelope.verified ? "verified" : "failed"}** · status \`${input.envelope.status}\``,
@@ -130,7 +132,7 @@ export function formatSummary(
     );
     lines.push("");
     lines.push(
-      "**Result:** verified envelope ready. Review intent, Receipt texts, and Capability before any signer sees them. Formoss never signs or broadcasts.",
+      "**Result:** verified envelope ready. Review intent, Receipt texts, and Capability before any signer sees them. Sealmoss never signs or broadcasts.",
     );
   } else {
     lines.push(

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
- * pnpm prepare hook: build Moss packages Formoss links via workspace.
- * Skip with FORMOSS_SKIP_PREPARE=1. No-op (exit 0) if vendor/moss is missing.
+ * pnpm prepare hook: build Moss packages Sealmoss links via workspace.
+ * Skip with SEALMOSS_SKIP_PREPARE=1. No-op (exit 0) if vendor/moss is missing.
  */
 import { spawnSync } from "node:child_process";
 import { existsSync } from "node:fs";
@@ -10,15 +10,15 @@ import { fileURLToPath } from "node:url";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 
-if (process.env.FORMOSS_SKIP_PREPARE === "1") {
-  console.log("formoss prepare: skipped (FORMOSS_SKIP_PREPARE=1)");
+if (process.env.SEALMOSS_SKIP_PREPARE === "1") {
+  console.log("sealmoss prepare: skipped (SEALMOSS_SKIP_PREPARE=1)");
   process.exit(0);
 }
 
 const mossCore = join(root, "vendor/moss/packages/core");
 if (!existsSync(mossCore)) {
   console.log(
-    "formoss prepare: vendor/moss missing — run: bash scripts/setup-moss.sh",
+    "sealmoss prepare: vendor/moss missing — run: bash scripts/setup-moss.sh",
   );
   process.exit(0);
 }

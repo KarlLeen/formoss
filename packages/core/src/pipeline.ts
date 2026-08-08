@@ -199,6 +199,7 @@ function finishFromEvidence(
       warnings: evidence.warnings,
       align: { ok: false, checks: [] },
       capability,
+      receiptOutcome: evidence.receiptOutcome,
       error: "simulation produced warnings or halted",
       verbose,
     });
@@ -236,6 +237,7 @@ function finishFromEvidence(
     warnings: evidence.warnings,
     align,
     capability,
+    receiptOutcome: evidence.receiptOutcome,
     error: align.ok ? undefined : "intent alignment failed",
     verbose,
   });
@@ -249,6 +251,7 @@ function finish(args: {
   warnings: string[];
   align: ReturnType<typeof alignIntent> | null;
   capability: unknown | null;
+  receiptOutcome?: unknown;
   error?: string;
   verbose?: boolean;
 }): PipelineResult {
@@ -269,6 +272,7 @@ function finish(args: {
     texts: args.texts,
     capability: args.capability,
     warnings: args.warnings,
+    receiptOutcome: args.receiptOutcome,
     error: args.error,
     verbose: args.verbose,
   });

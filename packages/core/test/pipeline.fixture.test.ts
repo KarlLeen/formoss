@@ -59,6 +59,7 @@ describe("runPipeline fixtures", () => {
           amountIn: "0.01",
           slippage: 50,
         },
+        expect: { estimatedAmountOut: "223" },
       }),
       fixture,
     });

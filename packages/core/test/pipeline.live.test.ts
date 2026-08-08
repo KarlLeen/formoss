@@ -20,6 +20,8 @@ describe("runPipeline live Monad simulate", { skip: skipLive }, () => {
             amountIn: "0.01",
             slippage: 50,
           },
+          // Low floor so live quote variance still clears amountOut gate.
+          expect: { estimatedAmountOut: "1" },
         }),
       });
       assert.equal(happy.status, "ok");
@@ -39,6 +41,7 @@ describe("runPipeline live Monad simulate", { skip: skipLive }, () => {
             slippage: 50,
           },
           expect: {
+            estimatedAmountOut: "1",
             recipient: "0x1111111111111111111111111111111111111111",
           },
         }),

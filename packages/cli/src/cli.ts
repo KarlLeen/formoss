@@ -3,22 +3,27 @@ import { basename, resolve } from "node:path";
 import { readFileSync, writeFileSync } from "node:fs";
 import {
   captureFixture,
+  diffFixtures,
   parseIntent,
   parsePipelineFixture,
   parsePromptIntent,
   runPipeline,
   statusToExitCode,
+  verifyEnvelope,
   type PipelineFixture,
   type WorkbenchIntent,
-} from "@formoss/core";
+} from "@sealmoss/core";
+import { parseFlags } from "./args.js";
+import { captureNewPath, decideCaptureWrite } from "./captureWrite.js";
 
 function usage(): never {
-  console.error(`Formoss — verifiable Agent trading workbench (Moss-backed)
+  console.error(`Sealmoss — verifiable Agent trading workbench (Moss-backed)
 
 Usage:
-  formoss run --intent <file.json> [options]
-  formoss run --prompt "<text>" --account <0x...> [options]
-  formoss capture --intent <file.json> --out <fixture.json>
+  sealmoss run --intent <file.json> [options]
+  sealmoss run --prompt "<text>" --account <0x...> [options]
+  sealmoss capture --intent <file.json> --out <fixture.json> [--compare <fixture.json>] [--force-write]
+  sealmoss verify-envelope <envelope.json> [--recheck]
 
 Run options:
   --fixture <file>   Offline/demo simulate evidence (skip live Moss)
@@ -30,11 +35,21 @@ Run options:
 Capture:
   Live action+simulate → PipelineFixture JSON for --fixture reuse.
   Does not run align. Prefer writing demos/fixtures/*-captured.json.
+  --compare <file>   Diff vs existing fixture first; on drift write <out>.new.json (not --out)
+  --force-write      With --compare drift, still write --out (exit 3)
 
-Exit codes (run):
-  0  verified  2  warning  3  align_fail  4  action_fail  1  usage
+Verify:
+  Recompute sha256 digest + envelope invariants (verified/capability/align).
+  --recheck  Re-run alignIntent on verified envelopes (needs receiptOutcome).
 
-Formoss never signs or broadcasts transactions.
+Exit codes (run / verify-envelope / capture --compare):
+  0  verified / digest ok / no drift
+  2  warning
+  3  align_fail / digest mismatch / fixture drift
+  4  action_fail
+  1  usage / invalid input
+
+Sealmoss never signs or broadcasts transactions.
 `);
   process.exit(1);
 }
@@ -47,19 +62,64 @@ function looksVerifiedName(path: string): boolean {
   return basename(path).toLowerCase().startsWith("verified");
 }
 
-async function runCapture(args: string[]): Promise<void> {
-  let intentPath: string | undefined;
-  let outPath: string | undefined;
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === "--intent") intentPath = args[++i];
-    else if (arg === "--out") outPath = args[++i];
-    else if (arg === "--help" || arg === "-h") usage();
-    else {
-      console.error(`Unknown argument: ${arg}`);
-      usage();
-    }
+function runVerifyEnvelope(args: string[]): void {
+  let flags;
+  try {
+    flags = parseFlags(
+      args.filter((a) => a.startsWith("--")),
+      [{ kind: "boolean", name: "recheck" }],
+    );
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error);
+    usage();
   }
+  if (flags.booleans.help) usage();
+
+  const positionals = args.filter((a) => !a.startsWith("--"));
+  const file = positionals[0];
+  if (!file || positionals.length > 1) usage();
+
+  let raw: unknown;
+  try {
+    raw = readJson(resolve(file));
+  } catch (error) {
+    console.error(
+      "Invalid envelope JSON:",
+      error instanceof Error ? error.message : error,
+    );
+    process.exit(1);
+  }
+
+  const result = verifyEnvelope(raw, {
+    recheck: flags.booleans.recheck === true,
+  });
+  if (result.ok) {
+    console.log(result.detail);
+    process.exit(0);
+  }
+  console.error(result.detail);
+  process.exit(result.structural ? 1 : 3);
+}
+
+async function runCapture(args: string[]): Promise<void> {
+  let flags;
+  try {
+    flags = parseFlags(args, [
+      { kind: "value", name: "intent" },
+      { kind: "value", name: "out" },
+      { kind: "value", name: "compare" },
+      { kind: "boolean", name: "force-write" },
+    ]);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error);
+    usage();
+  }
+  if (flags.booleans.help) usage();
+
+  const intentPath = flags.values.intent;
+  const outPath = flags.values.out;
+  const comparePath = flags.values.compare;
+  const forceWrite = flags.booleans["force-write"] === true;
   if (!intentPath || !outPath) usage();
 
   let intent: WorkbenchIntent;
@@ -73,18 +133,75 @@ async function runCapture(args: string[]): Promise<void> {
     process.exit(1);
   }
 
+  let baseline: PipelineFixture | undefined;
+  if (comparePath) {
+    try {
+      baseline = parsePipelineFixture(readJson(resolve(comparePath)));
+    } catch (error) {
+      console.error(
+        "Invalid compare fixture:",
+        error instanceof Error ? error.message : error,
+      );
+      process.exit(1);
+    }
+  }
+
   console.log(
     `Capturing ${intent.protocol}.${intent.method} for ${intent.account}…`,
   );
   try {
     const fixture = await captureFixture({ intent });
+    const body = `${JSON.stringify(fixture, null, 2)}\n`;
     const target = resolve(outPath);
-    writeFileSync(target, `${JSON.stringify(fixture, null, 2)}\n`);
-    console.log(`Wrote fixture: ${target}`);
-    console.log(
-      `Reuse with: formoss run --intent ${intentPath} --fixture ${outPath}`,
-    );
-    process.exit(0);
+
+    let drifted = false;
+    if (baseline) {
+      const diff = diffFixtures(baseline, fixture);
+      console.log(`Compare vs ${comparePath}: ${diff.detail}`);
+      if (diff.addedTexts.length > 0) {
+        console.log(`  added texts (${diff.addedTexts.length}):`);
+        for (const text of diff.addedTexts.slice(0, 5)) {
+          console.log(`    + ${text}`);
+        }
+      }
+      if (diff.removedTexts.length > 0) {
+        console.log(`  removed texts (${diff.removedTexts.length}):`);
+        for (const text of diff.removedTexts.slice(0, 5)) {
+          console.log(`    - ${text}`);
+        }
+      }
+      if (diff.changedIndexes.length > 0) {
+        console.log(
+          `  changed text indexes: ${diff.changedIndexes.slice(0, 12).join(", ")}`,
+        );
+      }
+      if (!diff.outcomeEqual) console.log("  receiptOutcome: changed");
+      if (!diff.warningsEqual) console.log("  warnings: changed");
+      if (!diff.capabilityEqual) console.log("  capability: changed");
+      drifted = !diff.ok;
+      if (diff.hint) console.error(diff.hint);
+    }
+
+    const plan = decideCaptureWrite({
+      compared: baseline !== undefined,
+      drifted,
+      forceWrite,
+    });
+    if (plan.writeNew) {
+      const neu = resolve(captureNewPath(outPath));
+      writeFileSync(neu, body);
+      console.log(`Wrote new fixture (drift): ${neu}`);
+    }
+    if (plan.writeOut) {
+      writeFileSync(target, body);
+      console.log(`Wrote fixture: ${target}`);
+      console.log(
+        `Reuse with: sealmoss run --intent ${intentPath} --fixture ${outPath}`,
+      );
+    } else {
+      console.log(`Skipped writing --out (drift); see .new.json`);
+    }
+    process.exit(plan.exitCode);
   } catch (error) {
     console.error(error instanceof Error ? error.message : error);
     process.exit(4);
@@ -92,31 +209,32 @@ async function runCapture(args: string[]): Promise<void> {
 }
 
 async function runPipelineCmd(args: string[]): Promise<void> {
-  let intentPath: string | undefined;
-  let fixturePath: string | undefined;
-  let prompt: string | undefined;
-  let account: string | undefined;
-  let outPath = "verified-capability.json";
-  let failOutPath = "failed-run.json";
-  let verbose = false;
-  let jsonOut = false;
-
-  for (let i = 0; i < args.length; i++) {
-    const arg = args[i];
-    if (arg === "--intent") intentPath = args[++i];
-    else if (arg === "--fixture") fixturePath = args[++i];
-    else if (arg === "--prompt") prompt = args[++i];
-    else if (arg === "--account") account = args[++i];
-    else if (arg === "--out") outPath = args[++i]!;
-    else if (arg === "--fail-out") failOutPath = args[++i]!;
-    else if (arg === "--verbose") verbose = true;
-    else if (arg === "--json") jsonOut = true;
-    else if (arg === "--help" || arg === "-h") usage();
-    else {
-      console.error(`Unknown argument: ${arg}`);
-      usage();
-    }
+  let flags;
+  try {
+    flags = parseFlags(args, [
+      { kind: "value", name: "intent" },
+      { kind: "value", name: "fixture" },
+      { kind: "value", name: "prompt" },
+      { kind: "value", name: "account" },
+      { kind: "value", name: "out" },
+      { kind: "value", name: "fail-out" },
+      { kind: "boolean", name: "verbose" },
+      { kind: "boolean", name: "json" },
+    ]);
+  } catch (error) {
+    console.error(error instanceof Error ? error.message : error);
+    usage();
   }
+  if (flags.booleans.help) usage();
+
+  const intentPath = flags.values.intent;
+  const fixturePath = flags.values.fixture;
+  const prompt = flags.values.prompt;
+  const account = flags.values.account;
+  const outPath = flags.values.out ?? "verified-capability.json";
+  const failOutPath = flags.values["fail-out"] ?? "failed-run.json";
+  const verbose = flags.booleans.verbose === true;
+  const jsonOut = flags.booleans.json === true;
 
   let intent: WorkbenchIntent;
   try {
@@ -196,6 +314,10 @@ async function main(): Promise<void> {
   }
   if (cmd === "run") {
     await runPipelineCmd(args.slice(1));
+    return;
+  }
+  if (cmd === "verify-envelope") {
+    runVerifyEnvelope(args.slice(1));
     return;
   }
   usage();

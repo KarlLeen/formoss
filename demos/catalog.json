@@ -1,0 +1,40 @@
+{
+  "demos": [
+    {
+      "id": "happy",
+      "label": "Load happy path",
+      "intent": "swap-mon-usdc.json",
+      "fixture": "offline"
+    },
+    {
+      "id": "bad",
+      "label": "Load align-fail",
+      "intent": "bad-recipient.json",
+      "fixture": "offline"
+    },
+    {
+      "id": "warn",
+      "label": "Load warning",
+      "intent": "swap-mon-usdc.json",
+      "fixture": "warning"
+    },
+    {
+      "id": "minout",
+      "label": "Load min-out",
+      "intent": "bad-min-out.json",
+      "fixture": "min-out"
+    },
+    {
+      "id": "approve",
+      "label": "Load approve-bad",
+      "intent": "approve-bad-spender.json",
+      "fixture": "approve-bad"
+    }
+  ],
+  "fixtures": {
+    "warning": "fixtures/simulate-warning.json",
+    "min-out": "fixtures/kuru-swap-ok.json",
+    "approve-bad": "fixtures/approve-bad-spender.json",
+    "offline": "fixtures/kuru-swap-ok.json"
+  }
+}

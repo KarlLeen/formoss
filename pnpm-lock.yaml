@@ -14,7 +14,7 @@ importers:
 
   packages/cli:
     dependencies:
-      '@formoss/core':
+      '@sealmoss/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:
@@ -58,7 +58,7 @@ importers:
 
   packages/web:
     dependencies:
-      '@formoss/core':
+      '@sealmoss/core':
         specifier: workspace:*
         version: link:../core
     devDependencies:

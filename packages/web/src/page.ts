@@ -3,7 +3,7 @@ export const pageHtml = `<!doctype html>
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Formoss — verifiable Agent workbench</title>
+  <title>Sealmoss — verifiable Agent workbench</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
@@ -111,24 +111,26 @@ export const pageHtml = `<!doctype html>
     .status.bad { color: var(--fail); }
     .note { margin-top: 1.5rem; color: var(--muted); font-size: .92rem; max-width: 42rem; }
     code { font-family: var(--mono); font-size: .85em; color: var(--accent); }
+    .checks-meta { font-family: var(--mono); font-size: .72rem; color: var(--muted); margin: .75rem 0 0; }
+    .digest { font-family: var(--mono); font-size: .68rem; word-break: break-all; color: var(--ink); margin: .5rem 0 0; }
+    .sub { margin: .9rem 0 .4rem; font-family: var(--mono); font-size: .68rem; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
   </style>
 </head>
 <body>
   <div class="app">
-    <h1 class="brand">Formoss</h1>
-    <p class="lede">Verifiable Agent trading workbench on Moss. Simulate is mandatory. Warnings stop the flow. Receipt leaf texts must align with intent before any unsigned Capability is emitted.</p>
+    <h1 class="brand">Sealmoss</h1>
+    <p class="lede">Seal on Moss Receipts: simulate is mandatory, Warnings stop the flow, and ordered leaf texts must align with intent before any unsigned Capability is nested. Not a wallet scanner, key vault, or MEV protector.</p>
     <div class="grid">
       <section>
         <h2>Intent</h2>
         <textarea id="intent" spellcheck="false"></textarea>
-        <div class="actions">
+        <div class="actions" id="demo-actions">
           <button id="run" type="button">Run pipeline</button>
-          <button id="happy" class="secondary" type="button">Load happy path</button>
-          <button id="bad" class="secondary" type="button">Load align-fail</button>
-          <button id="warn" class="secondary" type="button">Load warning</button>
-          <button id="minout" class="secondary" type="button">Load min-out</button>
-          <button id="approve" class="secondary" type="button">Load approve-bad</button>
         </div>
+        <label class="live-toggle" style="display:flex;gap:.5rem;align-items:center;margin-top:.75rem;font-family:var(--mono);font-size:.72rem;color:var(--muted)">
+          <input id="live" type="checkbox" />
+          Allow live RPC (requires server SEALMOSS_WEB_ALLOW_LIVE=1)
+        </label>
         <p id="err" class="status bad" hidden></p>
       </section>
       <section>
@@ -139,91 +141,157 @@ export const pageHtml = `<!doctype html>
       <section>
         <h2>Receipt alignment</h2>
         <ul id="texts"></ul>
-        <ul id="checks" style="margin-top:.9rem"></ul>
+        <p class="sub">Warnings</p>
+        <ul id="warnings"></ul>
+        <p id="checks-meta" class="checks-meta"></p>
+        <ul id="checks"></ul>
+        <p class="sub">Digest</p>
+        <p id="digest" class="digest"></p>
+        <div class="actions">
+          <button id="copy-digest" class="secondary" type="button" disabled>Copy digest</button>
+          <button id="download" class="secondary" type="button" disabled>Download envelope</button>
+        </div>
       </section>
     </div>
-    <p class="note">Browser only renders. <code>POST /api/run</code> executes <code>@formoss/core</code> on this server — same pipeline as the CLI. Formoss never signs.</p>
+    <p class="note">Offline demos always send a catalog <code>fixture</code> (no RPC). <code>POST /api/run</code> is fixture-only unless live is allowed. Failed align checks shown by default — same as CLI.</p>
   </div>
   <script>
-    const happy = {
-      protocol: "kuru", method: "swap",
-      account: "0xcccccccccccccccccccccccccccccccccccccccc",
-      params: {
-        tokenIn: "native",
-        tokenOut: "0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
-        amountIn: "0.01", slippage: 50
-      }
-    };
-    const bad = {
-      ...happy,
-      expect: { recipient: "0x1111111111111111111111111111111111111111" }
-    };
-    const minOut = { ...happy, expect: { minAmountOut: "999999999999" } };
-    const approveBad = {
-      protocol: "kuru", method: "swap",
-      account: "0xcccccccccccccccccccccccccccccccccccccccc",
-      params: {
-        tokenIn: "0x3bd359C1119dA7Da1D913D1C4D2B7c461115433A",
-        tokenOut: "0x754704Bc059F8C67012fEd69BC8A327a5aafb603",
-        amountIn: "10000000000000000", slippage: 50
-      },
-      expect: { spender: "0xd651346d7c789536ebf06dc72aE3C8502cd695CC" }
-    };
     let activeFixture = "offline";
+    let lastArtifact = null;
+    let lastDigestHex = "";
     const intentEl = document.getElementById("intent");
     const stepsEl = document.getElementById("steps");
     const textsEl = document.getElementById("texts");
+    const warningsEl = document.getElementById("warnings");
     const checksEl = document.getElementById("checks");
+    const checksMetaEl = document.getElementById("checks-meta");
+    const digestEl = document.getElementById("digest");
     const statusEl = document.getElementById("status");
     const errEl = document.getElementById("err");
     const runBtn = document.getElementById("run");
-    const load = (intent, fixture) => {
-      intentEl.value = JSON.stringify(intent, null, 2);
-      activeFixture = fixture;
+    const liveEl = document.getElementById("live");
+    const copyBtn = document.getElementById("copy-digest");
+    const downloadBtn = document.getElementById("download");
+    const actionsEl = document.getElementById("demo-actions");
+
+    async function loadDemo(id) {
+      const res = await fetch("/api/demos/" + encodeURIComponent(id));
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || ("HTTP " + res.status));
+      intentEl.value = JSON.stringify(data.intent, null, 2);
+      activeFixture = data.fixture || "";
+    }
+
+    async function boot() {
+      const res = await fetch("/api/catalog");
+      const catalog = await res.json();
+      if (!res.ok) throw new Error(catalog.error || ("HTTP " + res.status));
+      for (const demo of catalog.demos || []) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "secondary";
+        btn.textContent = demo.label;
+        btn.onclick = () => loadDemo(demo.id).catch((e) => {
+          errEl.hidden = false;
+          errEl.textContent = e.message || String(e);
+        });
+        actionsEl.appendChild(btn);
+      }
+      const first = (catalog.demos || [])[0];
+      if (first) await loadDemo(first.id);
+    }
+
+    copyBtn.onclick = async () => {
+      if (!lastDigestHex) return;
+      try { await navigator.clipboard.writeText(lastDigestHex); } catch (_) {}
     };
-    intentEl.value = JSON.stringify(happy, null, 2);
-    document.getElementById("happy").onclick = () => load(happy, "offline");
-    document.getElementById("bad").onclick = () => load(bad, "offline");
-    document.getElementById("warn").onclick = () => load(happy, "warning");
-    document.getElementById("minout").onclick = () => load(minOut, "min-out");
-    document.getElementById("approve").onclick = () => load(approveBad, "approve-bad");
+    downloadBtn.onclick = () => {
+      if (!lastArtifact) return;
+      const name = lastArtifact.verified ? "verified-capability.json" : "failed-run.json";
+      const blob = new Blob([JSON.stringify(lastArtifact, null, 2) + "\\n"], { type: "application/json" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = name;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    };
+
     runBtn.onclick = async () => {
       errEl.hidden = true; runBtn.disabled = true; statusEl.textContent = "Running…";
-      stepsEl.innerHTML = textsEl.innerHTML = checksEl.innerHTML = "";
+      stepsEl.textContent = textsEl.textContent = warningsEl.textContent = checksEl.textContent = "";
+      checksMetaEl.textContent = "";
+      digestEl.textContent = "";
+      lastArtifact = null;
+      lastDigestHex = "";
+      copyBtn.disabled = true;
+      downloadBtn.disabled = true;
       try {
         const intent = JSON.parse(intentEl.value);
+        const live = !!(liveEl && liveEl.checked);
         const res = await fetch("/api/run", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ intent, fixture: activeFixture || undefined })
+          body: JSON.stringify({
+            intent,
+            fixture: activeFixture || undefined,
+            live: live || undefined
+          })
         });
         const data = await res.json();
         if (!res.ok && !data.status) throw new Error(data.error || ("HTTP " + res.status));
         for (const step of data.steps || []) {
           const li = document.createElement("li");
           li.className = step.status;
-          li.innerHTML = "<strong>" + step.name + " · " + step.status + "</strong><br>" + step.detail;
+          li.textContent = step.name + " · " + step.status + " — " + step.detail;
           stepsEl.appendChild(li);
         }
-        const failed = (data.align?.checks || []).filter((c) => !c.ok);
-        const showChecks = failed.length ? failed : (data.align?.checks || []).slice(0, 8);
+        const warns = data.warnings || [];
+        if (warns.length === 0) {
+          const li = document.createElement("li");
+          li.textContent = "none";
+          warningsEl.appendChild(li);
+        } else {
+          for (const w of warns) {
+            const li = document.createElement("li");
+            li.className = "fail";
+            li.textContent = w;
+            warningsEl.appendChild(li);
+          }
+        }
+        const allChecks = data.align?.checks || [];
+        const failed = allChecks.filter((c) => !c.ok);
+        const passed = allChecks.filter((c) => c.ok);
         for (const [i, text] of (data.texts || []).entries()) {
           const li = document.createElement("li");
-          const check = (data.align?.checks || []).find((c) => c.id === "text_" + i + "_nonempty");
+          const check = allChecks.find((c) => c.id === "text_" + i + "_nonempty");
           li.className = check && check.ok === false ? "fail" : "pass";
           li.textContent = text;
           textsEl.appendChild(li);
         }
-        for (const check of showChecks) {
-          const li = document.createElement("li");
-          li.className = check.ok ? "ok" : "fail";
-          li.innerHTML = "<strong>" + (check.ok ? "pass" : "fail") + " · " + check.id + "</strong><br>" + check.detail;
-          checksEl.appendChild(li);
+        if (failed.length > 0) {
+          checksMetaEl.textContent = failed.length + " failed / " + passed.length + " passed — failures:";
+          for (const check of failed) {
+            const li = document.createElement("li");
+            li.className = "fail";
+            li.textContent = "fail · " + check.id + " — " + check.detail;
+            checksEl.appendChild(li);
+          }
+        } else if (passed.length > 0) {
+          checksMetaEl.textContent = passed.length + " checks passed";
+        } else {
+          checksMetaEl.textContent = "Alignment skipped or empty";
         }
+        lastArtifact = data.artifact || null;
+        lastDigestHex = (data.artifact && data.artifact.digest && data.artifact.digest.hex) || "";
+        digestEl.textContent = lastDigestHex
+          ? ("sha256:" + lastDigestHex)
+          : "no digest";
+        copyBtn.disabled = !lastDigestHex;
+        downloadBtn.disabled = !lastArtifact;
         const verified = !!(data.artifact && data.artifact.verified);
         statusEl.className = "status " + (verified ? "ok" : "bad");
         statusEl.textContent = verified
-          ? ("Verified envelope (digest " + (data.artifact.digest?.hex || "").slice(0, 12) + "…)")
+          ? ("Verified envelope · digest below")
           : ("Not verified (" + data.status + ")" + (data.error ? ": " + data.error : ""));
       } catch (e) {
         errEl.hidden = false;
@@ -234,6 +302,11 @@ export const pageHtml = `<!doctype html>
         runBtn.disabled = false;
       }
     };
+
+    boot().catch((e) => {
+      errEl.hidden = false;
+      errEl.textContent = e.message || String(e);
+    });
   </script>
 </body>
 </html>`;

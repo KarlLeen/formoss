@@ -1,5 +1,6 @@
 import { approvalRules } from "./approvals.js";
 import { commonRules } from "./common.js";
+import { assertAlignRulesCoverProtocols } from "./coverage.js";
 import { kuruSwapRules } from "./kuruSwap.js";
 import type { AlignRule } from "./types.js";
 import { wmonRules } from "./wmon.js";
@@ -12,4 +13,11 @@ export const ALIGN_RULES: readonly AlignRule[] = [
   ...wmonRules,
 ];
 
-export type { AlignContext, AlignRule, AddCheck } from "./types.js";
+assertAlignRulesCoverProtocols(ALIGN_RULES);
+
+export type { AlignContext, AlignRule, AlignWhen, AddCheck } from "./types.js";
+export { matchWhen } from "./types.js";
+export {
+  assertAlignRulesCoverProtocols,
+  REQUIRED_PROTOCOL_METHODS,
+} from "./coverage.js";

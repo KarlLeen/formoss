@@ -9,6 +9,7 @@
     "slippage": 50
   },
   "expect": {
+    "estimatedAmountOut": "223",
     "spender": "0xd651346d7c789536ebf06dc72aE3C8502cd695CC"
   }
 }

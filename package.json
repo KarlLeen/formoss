@@ -1,5 +1,5 @@
 {
-  "name": "formoss",
+  "name": "sealmoss",
   "private": true,
   "type": "module",
   "packageManager": "pnpm@10.14.0",
@@ -9,11 +9,13 @@
   "scripts": {
     "prepare": "node scripts/prepare.mjs",
     "build:moss": "bash scripts/build-moss.sh",
-    "build": "pnpm -r --filter @formoss/core --filter @formoss/cli --filter @formoss/web run build",
+    "build": "pnpm -r --filter @sealmoss/core --filter @sealmoss/cli --filter @sealmoss/web run build",
     "typecheck": "pnpm -r run typecheck",
-    "test": "pnpm --filter @formoss/core test",
-    "formoss": "node packages/cli/dist/cli.js",
-    "web": "pnpm --filter @formoss/web dev",
+    "test": "pnpm --filter @sealmoss/core test && pnpm --filter @sealmoss/cli test && pnpm --filter @sealmoss/web test",
+
+
+    "sealmoss": "node packages/cli/dist/cli.js",
+    "web": "pnpm --filter @sealmoss/web dev",
     "demo": "node packages/cli/dist/cli.js run --intent demos/swap-mon-usdc.json",
     "demo:warning": "node packages/cli/dist/cli.js run --intent demos/swap-mon-usdc.json --fixture demos/fixtures/simulate-warning.json --fail-out failed-run.json",
     "demo:offline": "node packages/cli/dist/cli.js run --intent demos/swap-mon-usdc.json --fixture demos/fixtures/kuru-swap-ok.json",

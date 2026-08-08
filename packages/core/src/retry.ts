@@ -24,8 +24,8 @@ export function isTransientError(error: unknown): boolean {
 }
 
 export function rpcRetryConfig(): { retries: number; timeoutMs: number } {
-  const timeoutMs = Number(process.env.FORMOSS_RPC_TIMEOUT_MS ?? 45_000);
-  const retries = Number(process.env.FORMOSS_RPC_RETRIES ?? 2);
+  const timeoutMs = Number(process.env.SEALMOSS_RPC_TIMEOUT_MS ?? 45_000);
+  const retries = Number(process.env.SEALMOSS_RPC_RETRIES ?? 2);
   return {
     timeoutMs: Number.isFinite(timeoutMs) && timeoutMs > 0 ? timeoutMs : 45_000,
     retries: Number.isFinite(retries) && retries >= 0 ? Math.floor(retries) : 2,

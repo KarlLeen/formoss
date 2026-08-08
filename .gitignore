@@ -10,5 +10,6 @@ failed-run.json
 coverage
 packages/web/dist
 packages/core/dist-test
+packages/*/dist-test
 packages/*/dist
 demos/fixtures/*-captured.json

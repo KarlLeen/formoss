@@ -15,6 +15,6 @@ else
   git clone --depth 1 "$MOSS_URL" "$TARGET"
 fi
 
-echo "Building Moss packages required by Formoss…"
+echo "Building Moss packages required by Sealmoss…"
 bash "$ROOT/scripts/build-moss.sh"
 echo "Moss ready at vendor/moss"

@@ -104,7 +104,7 @@ describe("approve gate", () => {
         amountIn,
         slippage: 50,
       },
-      expect: { spender: KURU_ROUTER_ADDRESS },
+      expect: { spender: KURU_ROUTER_ADDRESS, estimatedAmountOut: "223" },
     });
     const capability = {
       kind: "capability",
@@ -149,6 +149,29 @@ describe("approve gate", () => {
 });
 
 describe("minAmountOut / slippage floor", () => {
+  it("fails when slippage set but no floor source", () => {
+    const intent = parseIntent({
+      protocol: "kuru",
+      method: "swap",
+      account,
+      params: {
+        tokenIn: NATIVE,
+        tokenOut: USDC_ADDRESS,
+        amountIn: "0.01",
+        slippage: 50,
+      },
+    });
+    const result = alignFixture({
+      intent,
+      texts: kuruTexts(),
+      outcome: kuruOutcome(),
+    });
+    assert.equal(result.ok, false);
+    assert.ok(
+      result.checks.some((c) => c.id === "slippage_floor_missing" && !c.ok),
+    );
+  });
+
   it("fails when amountOut below expect.minAmountOut", () => {
     const intent = parseIntent({
       protocol: "kuru",
@@ -216,5 +239,67 @@ describe("minAmountOut / slippage floor", () => {
       outcome: kuruOutcome(),
     });
     assert.equal(result.ok, true);
+  });
+
+  it("fails when tree minimumAmountOut exceeds Receipt amountOut", () => {
+    const intent = parseIntent({
+      protocol: "kuru",
+      method: "swap",
+      account,
+      params: {
+        tokenIn: NATIVE,
+        tokenOut: USDC_ADDRESS,
+        amountIn: "0.01",
+        slippage: 50,
+      },
+      expect: { estimatedAmountOut: "223" },
+    });
+    const capability = {
+      kind: "capability",
+      protocol: "kuru",
+      method: "swap",
+      params: {
+        tokenIn: NATIVE,
+        tokenOut: USDC_ADDRESS,
+        amountIn: "0.01",
+        slippage: 50,
+        estimatedAmountOut: "223",
+        minimumAmountOut: "999999",
+      },
+      children: [],
+    };
+    const result = alignFixture({
+      intent,
+      capability,
+      texts: kuruTexts(),
+      outcome: kuruOutcome(),
+    });
+    assert.equal(result.ok, false);
+    assert.ok(
+      result.checks.some((c) => c.id === "tree_min_amount_out" && !c.ok),
+    );
+  });
+
+  it("skips tree floor checks for offline stub capability", () => {
+    const intent = parseIntent({
+      protocol: "kuru",
+      method: "swap",
+      account,
+      params: {
+        tokenIn: NATIVE,
+        tokenOut: USDC_ADDRESS,
+        amountIn: "0.01",
+        slippage: 50,
+      },
+      expect: { estimatedAmountOut: "223" },
+    });
+    const result = alignFixture({
+      intent,
+      capability: { kind: "fixture-capability" },
+      texts: kuruTexts(),
+      outcome: kuruOutcome(),
+    });
+    assert.equal(result.ok, true);
+    assert.ok(!result.checks.some((c) => c.id.startsWith("tree_")));
   });
 });

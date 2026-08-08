@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build the Moss packages Formoss depends on (after submodule / clone).
+# Build the Moss packages Sealmoss depends on (after submodule / clone).
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"

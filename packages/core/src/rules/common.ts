@@ -3,7 +3,7 @@ import type { AlignRule } from "./types.js";
 export const commonRules: readonly AlignRule[] = [
   {
     id: "protocol_method",
-    when: () => true,
+    when: {},
     run: (ctx, add) => {
       add(
         "protocol_method",
@@ -15,7 +15,7 @@ export const commonRules: readonly AlignRule[] = [
   },
   {
     id: "receipt_texts",
-    when: () => true,
+    when: {},
     run: (ctx, add) => {
       add(
         "receipt_texts_present",

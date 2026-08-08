@@ -7,7 +7,7 @@ import type { AlignRule } from "./types.js";
 export const approvalRules: readonly AlignRule[] = [
   {
     id: "approvals",
-    when: () => true,
+    when: {},
     run: (ctx, add) => {
       const approvals = parseApprovalTexts(ctx.texts);
       const treeApproves = walkApproves(ctx.capability);

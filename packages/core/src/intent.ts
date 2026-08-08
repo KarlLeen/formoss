@@ -21,7 +21,10 @@ const expectSchema = z
     spender: addressSchema.optional(),
     /** Absolute min amountOut in base units (preferred floor). */
     minAmountOut: z.string().regex(/^\d+$/).optional(),
-    /** Quote estimate in base units; with params.slippage derives a floor when minAmountOut unset. */
+    /**
+     * Quote estimate in base units; with params.slippage derives a floor when
+     * minAmountOut unset. Required for Kuru align (with minAmountOut as alt).
+     */
     estimatedAmountOut: z.string().regex(/^\d+$/).optional(),
   })
   .strict()
@@ -111,6 +114,8 @@ export function parsePromptIntent(
       amountIn: amount,
       slippage: 50,
     },
+    // Floor source required by align; low estimate for demo prompts / live variance.
+    expect: { estimatedAmountOut: "1" },
   });
 }
 

@@ -9,8 +9,16 @@ import {
 import { rpcRetryConfig, withRetry } from "./retry.js";
 
 /** Strip capability tree to JSON-safe skeleton for fixtures. */
-export function stripCapabilitySkeleton(capability: unknown): unknown {
-  return JSON.parse(JSON.stringify(capability)) as unknown;
+export function stripCapabilitySkeleton(
+  capability: unknown,
+): Record<string, unknown> | unknown[] | string | number | boolean | null {
+  return JSON.parse(JSON.stringify(capability)) as
+    | Record<string, unknown>
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
 }
 
 export function evidenceToFixture(args: {
@@ -33,7 +41,7 @@ export function evidenceToFixture(args: {
       texts: args.evidence.texts,
       protocol: args.evidence.protocol,
       method: args.evidence.method,
-      receiptOutcome: args.evidence.receiptOutcome,
+      receiptOutcome: args.evidence.receiptOutcome as PipelineFixture["simulate"]["receiptOutcome"],
     },
   };
 }

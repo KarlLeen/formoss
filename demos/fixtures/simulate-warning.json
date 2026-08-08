@@ -3,7 +3,7 @@
   "skipAction": true,
   "simulate": {
     "warnings": [
-      "Formoss demo warning: injected for reproducible exit 2 (Agents must not ignore Warnings)"
+      "Sealmoss demo warning: injected for reproducible exit 2 (Agents must not ignore Warnings)"
     ],
     "texts": [
       "ERC20 Transfer: 10000000000000000 native from 0xcccccccccccccccccccccccccccccccccccccccc to 0xd651346d7c789536ebf06dc72ae3c8502cd695cc",

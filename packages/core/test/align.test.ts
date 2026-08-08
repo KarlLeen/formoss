@@ -7,6 +7,7 @@ import { alignFixture, parseIntent } from "../dist/index.js";
 
 const account = "0xcccccccccccccccccccccccccccccccccccccccc";
 const amountIn = parseUnits("0.01", 18).toString();
+const floorExpect = { estimatedAmountOut: "223" } as const;
 
 function kuruTexts(opts?: { sender?: string; amountOut?: string }): string[] {
   const sender = opts?.sender ?? account;
@@ -42,6 +43,7 @@ describe("alignFixture", () => {
         amountIn: "0.01",
         slippage: 50,
       },
+      expect: floorExpect,
     });
     const result = alignFixture({
       intent,
@@ -51,6 +53,9 @@ describe("alignFixture", () => {
     assert.equal(result.ok, true);
     assert.ok(result.checks.some((c) => c.id === "text_kuru_swap_line" && c.ok));
     assert.ok(result.checks.some((c) => c.id === "dual_amount_in" && c.ok));
+    assert.ok(
+      result.checks.some((c) => c.id === "slippage_floor_missing" && c.ok),
+    );
   });
 
   it("fails when expect.recipient does not match text/outcome sender", () => {
@@ -65,6 +70,7 @@ describe("alignFixture", () => {
         slippage: 50,
       },
       expect: {
+        ...floorExpect,
         recipient: "0x1111111111111111111111111111111111111111",
       },
     });
@@ -89,6 +95,7 @@ describe("alignFixture", () => {
         amountIn: "0.01",
         slippage: 50,
       },
+      expect: floorExpect,
     });
     const result = alignFixture({
       intent,
@@ -115,6 +122,7 @@ describe("alignFixture", () => {
         amountIn: "0.01",
         slippage: 50,
       },
+      expect: floorExpect,
     });
     const result = alignFixture({
       intent,
@@ -136,6 +144,7 @@ describe("alignFixture", () => {
         amountIn: "0.01",
         slippage: 50,
       },
+      expect: floorExpect,
     });
     const result = alignFixture({
       intent,

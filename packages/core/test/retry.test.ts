@@ -68,9 +68,38 @@ describe("withRetry / discovery", () => {
       { retries: 1, timeoutMs: 20, label: "slow rpc" },
     );
     assert.equal(value, "fresh-ok");
-    assert.ok(starts >= 2);
-    // Allow the late timer to fire; must not throw unhandled.
+    // Stacked request is allowed (no AbortSignal into Moss), but must not win.
+    assert.equal(starts, 2);
+    // Allow the late timer to fire; must not throw unhandled or flip the result.
     await new Promise((r) => setTimeout(r, 100));
+    assert.equal(value, "fresh-ok");
+  });
+
+  it("late success from timed-out attempt cannot override later attempt", async () => {
+    let starts = 0;
+    let lateResolved = false;
+    const value = await withRetry(
+      () => {
+        starts += 1;
+        if (starts === 1) {
+          return new Promise((resolve) => {
+            setTimeout(() => {
+              lateResolved = true;
+              resolve("stale-winner");
+            }, 60);
+          });
+        }
+        return new Promise((resolve) => {
+          setTimeout(() => resolve("attempt-2"), 5);
+        });
+      },
+      { retries: 1, timeoutMs: 15, label: "stacked rpc" },
+    );
+    assert.equal(value, "attempt-2");
+    assert.equal(starts, 2);
+    await new Promise((r) => setTimeout(r, 80));
+    assert.equal(lateResolved, true);
+    assert.equal(value, "attempt-2");
   });
 
   it("detects transient messages", () => {

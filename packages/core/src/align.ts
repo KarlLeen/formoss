@@ -1,6 +1,6 @@
 import type { WorkbenchIntent } from "./intent.js";
 import { ALIGN_RULES } from "./rules/index.js";
-import type { AlignCheck } from "./rules/types.js";
+import { matchWhen, type AlignCheck } from "./rules/types.js";
 
 export type { AlignCheck } from "./rules/types.js";
 
@@ -37,7 +37,7 @@ export function alignIntent(args: {
   };
 
   for (const rule of ALIGN_RULES) {
-    if (!rule.when(ctx)) continue;
+    if (!matchWhen(rule.when, ctx)) continue;
     rule.run(ctx, add);
   }
 
