@@ -4,10 +4,15 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+packageExtensionsChecksum: sha256-NmpfcP+nWJd1nH6fpmZadHYLID6b/n4PrBNY5krst6o=
+
 importers:
 
   .:
     devDependencies:
+      '@types/node':
+        specifier: ^22.13.0
+        version: 22.20.1
       typescript:
         specifier: ~5.9.0
         version: 5.9.3

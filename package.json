@@ -24,6 +24,36 @@
     "capture:kuru": "node packages/cli/dist/cli.js capture --intent demos/swap-mon-usdc.json --out demos/fixtures/kuru-swap-captured.json"
   },
   "devDependencies": {
+    "@types/node": "^22.13.0",
     "typescript": "~5.9.0"
+  },
+  "pnpm": {
+    "packageExtensions": {
+      "@themoss/core": {
+        "devDependencies": {
+          "@types/node": "^22.13.0"
+        }
+      },
+      "@themoss/simulator": {
+        "devDependencies": {
+          "@types/node": "^22.13.0"
+        }
+      },
+      "@themoss/erc": {
+        "devDependencies": {
+          "@types/node": "^22.13.0"
+        }
+      },
+      "@themoss/system": {
+        "devDependencies": {
+          "@types/node": "^22.13.0"
+        }
+      },
+      "@themoss/protocol-kuru": {
+        "devDependencies": {
+          "@types/node": "^22.13.0"
+        }
+      }
+    }
   }
 }
