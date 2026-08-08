@@ -7,6 +7,8 @@
     "node": ">=22"
   },
   "scripts": {
+    "prepare": "node scripts/prepare.mjs",
+    "build:moss": "bash scripts/build-moss.sh",
     "build": "pnpm -r --filter @formoss/core --filter @formoss/cli --filter @formoss/web run build",
     "typecheck": "pnpm -r run typecheck",
     "test": "pnpm --filter @formoss/core test",

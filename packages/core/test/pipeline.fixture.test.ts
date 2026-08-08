@@ -68,5 +68,8 @@ describe("runPipeline fixtures", () => {
     assert.ok(
       result.align?.checks.some((c) => c.id === "text_kuru_swap_line" && c.ok),
     );
+    const presentSteps = result.steps.filter((s) => s.name === "present");
+    assert.equal(presentSteps.length, 1);
+    assert.ok(result.artifact.steps.some((s) => s.name === "present"));
   });
 });

@@ -17,7 +17,8 @@ export function isTransientError(error: unknown): boolean {
     error instanceof Error
       ? `${error.name} ${error.message}`
       : String(error);
-  return /fetch failed|ECONNRESET|ETIMEDOUT|ECONNREFUSED|timeout|AbortError|network|socket|\[discovery\]/i.test(
+  // Do not match "[discovery]" — that is our wrapper, not a transport signal.
+  return /fetch failed|ECONNRESET|ETIMEDOUT|ECONNREFUSED|timeout|AbortError|network|socket/i.test(
     message,
   );
 }
@@ -31,46 +32,84 @@ export function rpcRetryConfig(): { retries: number; timeoutMs: number } {
   };
 }
 
-function abortError(timeoutMs: number): Error {
-  const error = new Error(`timeout ${timeoutMs}ms`);
-  error.name = "AbortError";
-  return error;
-}
+type RaceOk<T> = { kind: "ok"; value: T; gen: number };
+type RaceErr = { kind: "err"; error: unknown; gen: number };
+type RaceTimeout = { kind: "timeout"; gen: number };
+type RaceResult<T> = RaceOk<T> | RaceErr | RaceTimeout;
 
+/**
+ * Retry with a generation token so timed-out attempts cannot poison later
+ * retries (late resolve/reject are ignored). Does not cancel underlying RPC
+ * (Moss createRuntime has no AbortSignal); it only ignores late results.
+ *
+ * Transient / timeout → DiscoveryError with [discovery] prefix.
+ * Non-transient errors are rethrown as-is.
+ */
 export async function withRetry<T>(
   fn: () => Promise<T>,
   options: RetryOptions,
 ): Promise<T> {
+  let generation = 0;
   let lastError: unknown;
   const attempts = options.retries + 1;
+
   for (let attempt = 1; attempt <= attempts; attempt++) {
+    const myGen = ++generation;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    try {
-      const result = await Promise.race([
-        fn(),
-        new Promise<never>((_, reject) => {
-          timer = setTimeout(
-            () => reject(abortError(options.timeoutMs)),
-            options.timeoutMs,
-          );
-        }),
-      ]);
-      return result;
-    } catch (error) {
-      lastError = error;
-      const transient = isTransientError(error);
-      if (!transient || attempt >= attempts) {
-        const detail =
-          error instanceof Error ? error.message : String(error);
+
+    const raced: RaceResult<T> = await new Promise((resolve) => {
+      timer = setTimeout(() => {
+        resolve({ kind: "timeout", gen: myGen });
+      }, options.timeoutMs);
+
+      void fn().then(
+        (value) => resolve({ kind: "ok", value, gen: myGen }),
+        (error: unknown) => resolve({ kind: "err", error, gen: myGen }),
+      );
+    });
+
+    if (timer) clearTimeout(timer);
+
+    // Stale attempt (should be rare with sequential loop; keep for safety).
+    if (raced.gen !== myGen) {
+      continue;
+    }
+
+    if (raced.kind === "ok") {
+      return raced.value;
+    }
+
+    if (raced.kind === "timeout") {
+      // Invalidate any in-flight work from this attempt.
+      generation += 1;
+      lastError = new Error(`timeout ${options.timeoutMs}ms`);
+      (lastError as Error).name = "AbortError";
+      if (attempt >= attempts) {
         throw new DiscoveryError(
-          `[discovery] ${options.label} failed after ${attempt} attempt(s): ${detail}`,
-          { cause: error },
+          `[discovery] ${options.label} failed after ${attempt} attempt(s): timeout ${options.timeoutMs}ms`,
+          { cause: lastError },
         );
       }
-    } finally {
-      if (timer) clearTimeout(timer);
+      continue;
+    }
+
+    // err
+    lastError = raced.error;
+    if (!isTransientError(raced.error)) {
+      throw raced.error;
+    }
+    if (attempt >= attempts) {
+      const detail =
+        raced.error instanceof Error
+          ? raced.error.message
+          : String(raced.error);
+      throw new DiscoveryError(
+        `[discovery] ${options.label} failed after ${attempt} attempt(s): ${detail}`,
+        { cause: raced.error },
+      );
     }
   }
+
   throw new DiscoveryError(
     `[discovery] ${options.label} failed: ${lastError instanceof Error ? lastError.message : String(lastError)}`,
     { cause: lastError },
@@ -78,11 +117,14 @@ export async function withRetry<T>(
 }
 
 export function formatDiscoveryHint(error: unknown): string | undefined {
-  if (error instanceof DiscoveryError || (typeof error === "string" && error.includes("[discovery]"))) {
-    return "链上/RPC 发现问题（discovery），不是意图对齐失败（align）";
+  if (error instanceof DiscoveryError) {
+    return "RPC/discovery failure — not an intent alignment failure";
   }
   if (error instanceof Error && error.message.includes("[discovery]")) {
-    return "链上/RPC 发现问题（discovery），不是意图对齐失败（align）";
+    return "RPC/discovery failure — not an intent alignment failure";
+  }
+  if (typeof error === "string" && error.includes("[discovery]")) {
+    return "RPC/discovery failure — not an intent alignment failure";
   }
   return undefined;
 }

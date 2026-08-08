@@ -252,28 +252,15 @@ function finish(args: {
   error?: string;
   verbose?: boolean;
 }): PipelineResult {
-  const presented = present({
-    status: args.status,
-    intent: args.intent,
-    steps: args.steps,
-    align: args.align,
-    texts: args.texts,
-    capability: args.capability,
-    warnings: args.warnings,
-    error: args.error,
-    verbose: args.verbose,
-  });
-
-  const presentDetail = presented.artifact.verified
-    ? "verified envelope ready for human review"
-    : "failed envelope recorded — capability omitted";
   args.steps.push({
     name: "present",
     status: "ok",
-    detail: presentDetail,
+    detail:
+      args.status === "ok"
+        ? "verified envelope ready for human review"
+        : "failed envelope recorded — capability omitted",
   });
 
-  // Rebuild envelope so steps include the present step.
   const final = present({
     status: args.status,
     intent: args.intent,

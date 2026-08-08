@@ -1,0 +1,41 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  offline-demo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout (with Moss submodule)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - name: Install
+        run: FORMOSS_SKIP_PREPARE=1 pnpm install --prefer-offline --config.minimumReleaseAge=0
+
+      - name: Build Moss + Formoss
+        run: |
+          bash scripts/setup-moss.sh
+          pnpm build
+
+      - name: Unit tests (skip live E2E)
+        run: MOSS_SKIP_E2E=1 pnpm test
+
+      - name: Offline demo
+        run: pnpm demo:offline

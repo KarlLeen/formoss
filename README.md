@@ -17,8 +17,8 @@ Formoss **never** holds keys, signs, or broadcasts.
 git clone --recurse-submodules https://github.com/KarlLeen/formoss.git
 cd formoss
 pnpm install --prefer-offline --config.minimumReleaseAge=0
-# init submodule (if needed) + build @themoss/* packages Formoss links
-bash scripts/setup-moss.sh
+# prepare builds Moss packages when vendor/moss exists
+# (skip with FORMOSS_SKIP_PREPARE=1; or run: bash scripts/setup-moss.sh)
 pnpm build
 
 # 45s offline demo (no RPC)
@@ -63,7 +63,7 @@ pnpm formoss capture --intent demos/swap-mon-usdc.json --out demos/fixtures/kuru
 
 Envelope `digest` hashes `{ intent, texts, align, capability, status, verified }` (canonical JSON). Change evidence → digest changes. Not a signature.
 
-Live RPC: retries/timeouts via `FORMOSS_RPC_RETRIES` (default 2) and `FORMOSS_RPC_TIMEOUT_MS` (default 45000). Discovery failures are labeled `[discovery]` — not align failures.
+Live RPC: retries/timeouts via `FORMOSS_RPC_RETRIES` (default 2) and `FORMOSS_RPC_TIMEOUT_MS` (default 45000). Only **transient** RPC failures (and timeouts) are labeled `[discovery]`; validation/protocol errors are rethrown as-is. Timed-out attempts are ignored if they finish late (Moss has no AbortSignal).
 
 ### Exit codes
 
