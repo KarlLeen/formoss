@@ -98,6 +98,17 @@ pnpm web
 Open `http://localhost:5173`. Buttons load happy / align-fail / warning / min-out / approve-bad from `demos/` (always with a fixture).  
 `POST /api/run` is **fixture-only** by default. Live RPC requires `SEALMOSS_WEB_ALLOW_LIVE=1` **and** body/UI `live: true`.
 
+### Deploy (Vercel)
+
+Hosted Web is **fixture-only** (same offline demos as `pnpm demo:offline` / warning / min-out). Do **not** set `SEALMOSS_WEB_ALLOW_LIVE` on Vercel.
+
+1. Import [KarlLeen/formoss](https://github.com/KarlLeen/formoss) in Vercel (enable **Git submodules**).
+2. Root Directory: repository root (uses [`vercel.json`](vercel.json)).
+3. Framework Preset: Other. Install/build commands come from `vercel.json`.
+4. Node.js 22+. Deploy — open `/`, click a demo button, Run pipeline, Download envelope.
+
+Local parity: `bash scripts/vercel-build.sh` then `pnpm web`.
+
 ## Safety
 
 See [SECURITY.md](SECURITY.md).

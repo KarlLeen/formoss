@@ -1,0 +1,31 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "installCommand": "bash scripts/vercel-install.sh",
+  "buildCommand": "bash scripts/vercel-build.sh",
+  "framework": null,
+  "env": {
+    "SEALMOSS_DEMOS_DIR": "demos"
+  },
+  "rewrites": [
+    { "source": "/", "destination": "/api/handler?sealmossPath=/" },
+    {
+      "source": "/api/catalog",
+      "destination": "/api/handler?sealmossPath=/api/catalog"
+    },
+    {
+      "source": "/api/run",
+      "destination": "/api/handler?sealmossPath=/api/run"
+    },
+    {
+      "source": "/api/demos/:id",
+      "destination": "/api/handler?sealmossPath=/api/demos/:id"
+    }
+  ],
+  "functions": {
+    "api/handler.ts": {
+      "includeFiles": "demos/**",
+      "maxDuration": 60,
+      "memory": 1024
+    }
+  }
+}

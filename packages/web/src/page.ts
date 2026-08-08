@@ -120,6 +120,7 @@ export const pageHtml = `<!doctype html>
   <div class="app">
     <h1 class="brand">Sealmoss</h1>
     <p class="lede">Seal on Moss Receipts: simulate is mandatory, Warnings stop the flow, and ordered leaf texts must align with intent before any unsigned Capability is nested. Not a wallet scanner, key vault, or MEV protector.</p>
+    <p class="note" id="host-note">Hosted / default demo mode is <strong>fixture-only</strong> (no live Monad RPC). Live simulate stays on local CLI or <code>SEALMOSS_WEB_ALLOW_LIVE=1</code>.</p>
     <div class="grid">
       <section>
         <h2>Intent</h2>
@@ -153,7 +154,7 @@ export const pageHtml = `<!doctype html>
         </div>
       </section>
     </div>
-    <p class="note">Offline demos always send a catalog <code>fixture</code> (no RPC). <code>POST /api/run</code> is fixture-only unless live is allowed. Failed align checks shown by default — same as CLI.</p>
+    <p class="note">Demo buttons always send a catalog <code>fixture</code> (no RPC). <code>POST /api/run</code> rejects live unless the server allows it. Failed align checks shown by default — same as CLI. Download the envelope JSON after a run.</p>
   </div>
   <script>
     let activeFixture = "offline";
