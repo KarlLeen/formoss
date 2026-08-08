@@ -14,8 +14,8 @@ Formoss **never** holds keys, signs, or broadcasts.
 ## Quick start (judges)
 
 ```bash
-git clone --recurse-submodules <this-repo-url> Formoss
-cd Formoss
+git clone --recurse-submodules https://github.com/KarlLeen/formoss.git
+cd formoss
 pnpm install --prefer-offline --config.minimumReleaseAge=0
 # init submodule (if needed) + build @themoss/* packages Formoss links
 bash scripts/setup-moss.sh

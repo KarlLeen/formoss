@@ -5,10 +5,10 @@ Goal: show Formoss refuses to nest a Capability in a verified envelope unless si
 ## Prep
 
 ```bash
-git clone --recurse-submodules <repo-url> Formoss
-cd Formoss
-# or: git submodule update --init --depth 1
+git clone --recurse-submodules https://github.com/KarlLeen/formoss.git
+cd formoss
 pnpm install --prefer-offline --config.minimumReleaseAge=0
+bash scripts/setup-moss.sh
 pnpm build
 rm -f verified-capability.json failed-run.json
 ```
