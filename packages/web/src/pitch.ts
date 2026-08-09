@@ -284,7 +284,8 @@ export const pitchHtml = `<!doctype html>
   <nav class="nav" aria-label="Slides">
     <a href="#s1">1</a><a href="#s2">2</a><a href="#s3">3</a>
     <a href="#s4">4</a><a href="#s5">5</a><a href="#s6">6</a>
-    <a href="#s7">7</a><a href="#s8">8</a><a href="#s9">9</a><a href="#s10">10</a>
+    <a href="#s7">7</a><a href="#s8">8</a><a href="#s9">9</a>
+    <a href="#s10">10</a><a href="#s11">11</a>
   </nav>
   <main class="deck">
 
@@ -491,8 +492,34 @@ pnpm sealmoss verify-envelope verified-capability.json</code>
       </div>
     </section>
 
-    <!-- 9 Boundary -->
+    <!-- 9 Lightweight vs full platform -->
     <section class="slide" id="s9">
+      <p class="kicker">
+        <span class="zh">为什么轻量</span>
+        <span class="en">Why lightweight</span>
+      </p>
+      <h2 class="zh">一件事：给 Moss 证据盖章 — 可嵌入任何 Agent</h2>
+      <h2 class="en">One job: seal Moss evidence — embeddable in any Agent</h2>
+      <p class="zh">同类完整平台（如带 Agent 控制台、攻击演示、签名门禁 UI 的信任层）解决「端到端产品体验」。Sealmoss 刻意只做<strong>可搬运的闸门</strong>：</p>
+      <p class="en">Full platforms (Agent console, attack demos, signing-gate UI) own the end-to-end product. Sealmoss deliberately ships a <strong>portable gate</strong>:</p>
+      <ul>
+        <li class="zh"><strong style="color:var(--ink)">无 LLM 在环</strong> — Intent 是声明式 JSON；裁决是代码规则，不托管 StepFun / 工具预算 / Agent harness</li>
+        <li class="en"><strong style="color:var(--ink)">No LLM in the loop</strong> — Intent is declared JSON; verdicts are coded rules — no hosted model, tool budget, or Agent harness</li>
+        <li class="zh"><strong style="color:var(--ink)">库 + CLI 优先</strong> — <code>@sealmoss/core</code> / <code>sealmoss run</code> 可塞进既有 MCP Agent、脚本或别人的前端；不是必须换一整套 SSR 控制台</li>
+        <li class="en"><strong style="color:var(--ink)">Library + CLI first</strong> — drop <code>@sealmoss/core</code> / <code>sealmoss run</code> into an existing MCP Agent, script, or another UI — no forced SSR console</li>
+        <li class="zh"><strong style="color:var(--ink)">离线可复现</strong> — fixture demo 约 45s、无 RPC，评审与 CI 稳定；live capture 可选</li>
+        <li class="en"><strong style="color:var(--ink)">Offline-reproducible</strong> — ~45s fixture demos, no RPC for judges/CI; live capture optional</li>
+        <li class="zh"><strong style="color:var(--ink)">审计面小</strong> — 核心是 align 规则表 + envelope digest，而不是「平台 + Agent + 演示攻击」整栈</li>
+        <li class="en"><strong style="color:var(--ink)">Small audit surface</strong> — align rule table + envelope digest, not a full platform/Agent/attack-demo stack</li>
+      </ul>
+      <div class="flow">
+        <span class="zh">完整控制台 = 体验层 · Sealmoss = 可嵌入的证据闸门（可被控制台调用，也可单独给 CLI Agent 用）</span>
+        <span class="en">Full console = experience layer · Sealmoss = embeddable evidence gate (callable by a console, or alone by a CLI Agent)</span>
+      </div>
+    </section>
+
+    <!-- 10 Boundary -->
+    <section class="slide" id="s10">
       <p class="kicker">
         <span class="zh">硬边界</span>
         <span class="en">Hard boundary</span>
@@ -511,8 +538,8 @@ pnpm sealmoss verify-envelope verified-capability.json</code>
       </ul>
     </section>
 
-    <!-- 10 Close -->
-    <section class="slide" id="s10">
+    <!-- 11 Close -->
+    <section class="slide" id="s11">
       <p class="kicker">
         <span class="zh">结尾</span>
         <span class="en">Closing</span>
