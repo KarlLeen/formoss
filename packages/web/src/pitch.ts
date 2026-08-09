@@ -284,8 +284,6 @@ export const pitchHtml = `<!doctype html>
   <nav class="nav" aria-label="Slides">
     <a href="#s1">1</a><a href="#s2">2</a><a href="#s3">3</a>
     <a href="#s4">4</a><a href="#s5">5</a><a href="#s6">6</a>
-    <a href="#s7">7</a><a href="#s8">8</a><a href="#s9">9</a>
-    <a href="#s10">10</a><a href="#s11">11</a>
   </nav>
   <main class="deck">
 
@@ -296,264 +294,150 @@ export const pitchHtml = `<!doctype html>
         <span class="en">Monad Playground · Pitch Deck</span>
       </p>
       <h1 class="brand">Sealmoss</h1>
-      <p class="lede zh">给 Moss Capability 树盖章：Agent 必须 simulate、遇 Warning 即停，并把有序 Receipt 证据与 intent 对齐后，才嵌套未签名 Capability。</p>
-      <p class="lede en">The seal for Moss Capability trees — Agents must simulate, stop on Warnings, and align ordered Receipt evidence with intent before any unsigned Capability is nested.</p>
+      <p class="lede zh">给 Moss Capability 树盖章：Agent 必须 simulate、遇 Warning 即停，并把有序 Receipt 与 Intent 对齐后，才嵌套未签名 Capability。</p>
+      <p class="lede en">The seal for Moss Capability trees — Agents must simulate, stop on Warnings, and align ordered Receipts with Intent before any unsigned Capability is nested.</p>
       <div class="links">
         <a class="cta" href="https://sm.limlamleen.com" target="_blank" rel="noopener"><span class="zh">打开 Demo →</span><span class="en">Open live demo →</span></a>
         <a class="cta ghost" href="https://github.com/KarlLeen/formoss" target="_blank" rel="noopener">GitHub</a>
-        <a class="cta ghost" href="/"><span class="zh">Workbench</span><span class="en">Workbench</span></a>
+        <a class="cta ghost" href="/">Workbench</a>
       </div>
-      <p class="meta">Demo https://sm.limlamleen.com · Repo https://github.com/KarlLeen/formoss · Pitch /pitch</p>
+      <p class="meta">sm.limlamleen.com · github.com/KarlLeen/formoss · /pitch</p>
     </section>
 
-    <!-- 2 What is Moss -->
+    <!-- 2 Moss + Sealmoss (was s2+s3) -->
     <section class="slide" id="s2">
       <p class="kicker">
-        <span class="zh">Moss 是什么</span>
-        <span class="en">What is Moss</span>
+        <span class="zh">Moss · Sealmoss</span>
+        <span class="en">Moss · Sealmoss</span>
       </p>
-      <h2 class="zh">先把 Monad 协议操作变成可调用的「能力包」</h2>
-      <h2 class="en">Turn Monad protocol ops into Agent-callable packages</h2>
-      <p class="zh">Moss 不让 Agent 自己拼 calldata。它把 Kuru swap、WMON wrap 等操作做成协议自带的 Capability，并强制走模拟以产出证据。</p>
-      <p class="en">Moss does not let Agents hand-write calldata. It turns ops like Kuru swap and WMON wrap into protocol-owned Capabilities, and simulates to produce evidence.</p>
-      <ul>
-        <li class="zh"><span class="term">discover / load</span> — 能做什么、参数规则是什么</li>
-        <li class="en"><span class="term">discover / load</span> — what methods exist and their parameter contracts</li>
-        <li class="zh"><span class="term">action</span> — 生成一棵<strong>未签名</strong>交易树（Capability）</li>
-        <li class="en"><span class="term">action</span> — build an <strong>unsigned</strong> Capability tree</li>
-        <li class="zh"><span class="term">simulate</span> — 产出 Warning、有序 Receipt 文本 / Outcome（试跑报告）</li>
-        <li class="en"><span class="term">simulate</span> — emit Warnings and ordered Receipt texts / Outcomes</li>
-      </ul>
-      <p class="zh">Moss <strong>从不签名、从不广播</strong>。可以把它想成：<strong>施工图纸（Capability）+ 试跑报告（Receipt / Warning）</strong>。</p>
-      <p class="en">Moss <strong>never signs or broadcasts</strong>. Think: <strong>blueprint (Capability) + dry-run report (Receipt / Warning)</strong>.</p>
+      <h2 class="zh">Moss 造证据；Sealmoss 强制用证据</h2>
+      <h2 class="en">Moss makes evidence; Sealmoss forces its use</h2>
+      <p class="zh">Moss 把 Kuru swap、WMON wrap 等做成协议自带 Capability：<span class="term">action</span> 建<strong>未签名</strong>树，<span class="term">simulate</span> 产出 Warning 与有序 Receipt——从不签名、从不广播。</p>
+      <p class="en">Moss turns ops like Kuru swap and WMON wrap into protocol-owned Capabilities: <span class="term">action</span> builds an <strong>unsigned</strong> tree; <span class="term">simulate</span> emits Warnings and ordered Receipts — never signs or broadcasts.</p>
+      <p class="zh">Moss 默认<strong>不强制</strong> Agent 用证据。Sealmoss 把纪律变成硬闸门：证据没用到位，就不给出可嵌套的 Capability。</p>
+      <p class="en">Moss does not force Agents to use that evidence. Sealmoss hard-gates it: no nested Capability unless the evidence was used.</p>
+      <div class="flow">
+        <span>Intent → Moss action → Moss simulate → Sealmoss align → verified envelope</span>
+        <span class="zh">失败 → failed-run，capability: null（不能软忽略后还拿走可签树）</span>
+        <span class="en">Fail → failed-run, capability: null (no soft-ignore path to a signable tree)</span>
+      </div>
       <p class="meta"><a href="https://github.com/nishuzumi/moss" target="_blank" rel="noopener">github.com/nishuzumi/moss</a></p>
     </section>
 
-    <!-- 3 What is Sealmoss -->
+    <!-- 3 Problem + gates + evidence (was s4+s5) -->
     <section class="slide" id="s3">
       <p class="kicker">
-        <span class="zh">Sealmoss 是什么</span>
-        <span class="en">What is Sealmoss</span>
+        <span class="zh">缺口 · 三道硬门</span>
+        <span class="en">Gap · three hard gates</span>
       </p>
-      <h2 class="zh">盖在 Moss 前面的闸门</h2>
-      <h2 class="en">The gate in front of Moss</h2>
-      <p class="zh">Moss 把证据交出来了，但默认<strong>不强制</strong> Agent「必须用证据」。Sealmoss 把纪律变成硬条件：证据没用到位，就不给出可嵌套的 Capability。</p>
-      <p class="en">Moss produces evidence but does not force Agents to use it. Sealmoss turns that discipline into a hard gate: no nested Capability unless the evidence was used.</p>
-      <div class="flow">
-        <span class="zh">Intent → Moss action → Moss simulate → Sealmoss align → verified envelope</span>
-        <span class="en">Intent → Moss action → Moss simulate → Sealmoss align → verified envelope</span>
-        <span class="zh">失败 → failed-run envelope，capability: null（不能软忽略后还拿走可签树）</span>
-        <span class="en">Fail → failed-run envelope with capability: null (no soft-ignore path to a signable tree)</span>
-      </div>
-      <p class="lede zh" style="margin-top:1.2rem">一句话：Moss 造证据；Sealmoss 不把证据用到位，就不放行。</p>
-      <p class="lede en" style="margin-top:1.2rem">In one line: Moss makes evidence; Sealmoss withholds the Capability until evidence is used.</p>
-    </section>
-
-    <!-- 4 Problem + real-world evidence -->
-    <section class="slide" id="s4">
-      <p class="kicker">
-        <span class="zh">问题 · 真实世界信号</span>
-        <span class="en">Problem · real-world signals</span>
-      </p>
-      <h2 class="zh">Moss 交出证据后，Agent 仍可能</h2>
-      <h2 class="en">After Moss returns evidence, Agents can still</h2>
+      <h2 class="zh">证据交出来了，Agent 仍可能绕过</h2>
+      <h2 class="en">Evidence exists — Agents can still bypass it</h2>
       <ul>
-        <li class="zh">不 <span class="term">simulate</span> 就往下走</li>
-        <li class="en">Skip <span class="term">simulate</span> and continue</li>
-        <li class="zh">看到 <span class="term">Warning</span> 装作没看见</li>
-        <li class="en">Soft-ignore <span class="term">Warning</span>s</li>
-        <li class="zh">不对照用户 Intent 与有序 <span class="term">Receipt</span> 文本</li>
-        <li class="en">Never align user Intent with ordered <span class="term">Receipt</span> texts</li>
+        <li class="zh"><strong style="color:var(--ink)">Simulate 强制</strong> — 堵住「不 simulate 就往下走」；无 Moss 证据 / fixture 就没有 verified</li>
+        <li class="en"><strong style="color:var(--ink)">Simulate mandatory</strong> — blocks skipping simulate; no verified run without Moss evidence or a fixture</li>
+        <li class="zh"><strong style="color:var(--ink)">Warning 即停</strong> — 堵住「装作没看见」；failed-run，<code>capability: null</code></li>
+        <li class="en"><strong style="color:var(--ink)">Stop on Warning</strong> — blocks soft-ignore; failed-run, <code>capability: null</code></li>
+        <li class="zh"><strong style="color:var(--ink)">Receipt ↔ Intent</strong> — 堵住「不对照用户意图」；有序叶子文本对齐（spender、Kuru minOut 等）后才写 verified envelope（含 sha256 digest）</li>
+        <li class="en"><strong style="color:var(--ink)">Receipt ↔ Intent</strong> — blocks skipping alignment; ordered leaf texts must match before a verified envelope (with sha256 digest)</li>
       </ul>
-      <p class="zh" style="margin-top:1rem">这不是空想——行业已经在用文档规则、钱包管线、MCP 模式反复碰到同一缺口：</p>
-      <p class="en" style="margin-top:1rem">This is not hypothetical — the industry keeps hitting the same gap via docs, wallet pipelines, and MCP patterns:</p>
+      <p class="zh" style="margin-top:.9rem">签名仍在信封外；行业信号也指向同一缺口（约定 ≠ 运行时闸门）：</p>
+      <p class="en" style="margin-top:.9rem">Signing stays outside the envelope. Industry signals point to the same gap (docs ≠ a runtime gate):</p>
       <div class="evidence">
         <a href="https://github.com/nishuzumi/moss/blob/main/docs/agent-skill.md" target="_blank" rel="noopener">
-          <strong>Moss Agent safety rules (skill)</strong>
-          <span class="zh">Moss 要求 MCP Agent「必须 simulate、Warning 即停、Receipt 对齐 Intent」——写在 skill 文档里，属于约定，不是运行时闸门。</span>
-          <span class="en">Moss tells MCP Agents that simulate / stop-on-Warning / align Receipts are mandatory — as skill docs, not a runtime gate.</span>
+          <strong>Moss agent-skill</strong>
+          <span class="zh">必须 simulate / Warning 即停 / Receipt 对齐 — 写在 skill，不是硬闸门</span>
+          <span class="en">simulate / stop-on-Warning / align — skill docs, not a hard gate</span>
         </a>
         <a href="https://cloud.google.com/blog/products/identity-security/using-mcp-with-web3-how-to-secure-blockchain-interacting-agents" target="_blank" rel="noopener">
           <strong>Google Cloud · MCP × Web3</strong>
-          <span class="zh">指出多数加密 MCP 仍依赖配置私钥；更安全的路径是 Agent 只构造未签名交易、交回用户签名——关键是「证据与放行」谁来强制。</span>
-          <span class="en">Notes that many crypto MCP servers still expect a private key; safer patterns return unsigned txs for humans to sign — the open question is who enforces evidence before release.</span>
+          <span class="zh">更安全路径：Agent 只交未签名交易；谁强制「证据再放行」仍开放</span>
+          <span class="en">Safer path: unsigned txs for humans; who enforces evidence-before-release is open</span>
         </a>
         <a href="https://github.com/nikicat/mcp-wallet-signer" target="_blank" rel="noopener">
           <strong>mcp-wallet-signer</strong>
-          <span class="zh">生态共识：多数 blockchain MCP 要求把私钥写进配置，Agent 可无监督访问资金——说明「默认信任 Agent」仍是常态。</span>
-          <span class="en">States the common case: most blockchain MCPs ask for a private key in config, giving Agents unsupervised fund access.</span>
+          <span class="zh">多数 blockchain MCP 仍把私钥写进配置</span>
+          <span class="en">Most blockchain MCPs still put private keys in config</span>
         </a>
         <a href="https://docs.metamask.io/agent-wallet/" target="_blank" rel="noopener">
           <strong>MetaMask Agent Wallet</strong>
-          <span class="zh">钱包侧把 simulation 做成默认强制管线（并叠加威胁扫描）——侧面证明：Agent 交易不能只靠「自觉」。</span>
-          <span class="en">Makes transaction simulation a default mandatory pipeline (plus threat scanning) — evidence that Agent trades cannot rely on good faith alone.</span>
+          <span class="zh">钱包侧把 simulation 做成默认强制管线</span>
+          <span class="en">Makes simulation a default mandatory pipeline</span>
         </a>
       </div>
-      <p class="meta zh">Sealmoss 的切口：不扫链、不管钥匙——只在 Moss Receipt 证据上盖章放行。</p>
-      <p class="meta en">Sealmoss niche: not a scanner or key vault — a seal on Moss Receipt evidence.</p>
     </section>
 
-    <!-- 5 Gates -->
+    <!-- 4 Lightweight + boundary (was s9+s10) -->
+    <section class="slide" id="s4">
+      <p class="kicker">
+        <span class="zh">为什么轻量 · 硬边界</span>
+        <span class="en">Why lightweight · hard boundary</span>
+      </p>
+      <h2 class="zh">可嵌入的证据闸门 — 不是整套控制台</h2>
+      <h2 class="en">An embeddable evidence gate — not a full console</h2>
+      <p class="zh">同类完整平台做端到端体验（Agent 控制台、攻击演示、签名门禁 UI）。Sealmoss 只做<strong>可搬运的闸门</strong>：</p>
+      <p class="en">Full platforms own the end-to-end experience (Agent console, attack demos, signing-gate UI). Sealmoss ships only a <strong>portable gate</strong>:</p>
+      <ul>
+        <li class="zh"><strong style="color:var(--ink)">无 LLM 在环</strong> — Intent 是 JSON；裁决是按 <code>protocol.method</code> 挂的规则表，不托管模型 / Agent harness</li>
+        <li class="en"><strong style="color:var(--ink)">No LLM in the loop</strong> — Intent is JSON; verdicts are a coded rule list by <code>protocol.method</code> — no hosted model or Agent harness</li>
+        <li class="zh"><strong style="color:var(--ink)">库 + CLI</strong> — <code>@sealmoss/core</code> / <code>sealmoss run</code> 可塞进既有 MCP、脚本或别人的 UI</li>
+        <li class="en"><strong style="color:var(--ink)">Library + CLI</strong> — drop into an existing MCP, script, or another UI</li>
+        <li class="zh"><strong style="color:var(--ink)">离线可复现 · 审计面小</strong> — fixture 无 RPC；核心是 align + envelope digest，不是「平台 + Agent + 演示」整栈</li>
+        <li class="en"><strong style="color:var(--ink)">Offline + small audit surface</strong> — fixtures need no RPC; core is align + envelope digest, not a full platform stack</li>
+        <li class="zh"><strong style="color:var(--ink)">不是</strong>扫链器 / key vault / signer / broadcaster / MEV 保护；托管 Demo 默认 fixture-only</li>
+        <li class="en"><strong style="color:var(--ink)">Not</strong> a scanner, key vault, signer, broadcaster, or MEV protector; hosted demo is fixture-only</li>
+      </ul>
+    </section>
+
+    <!-- 5 Monad + CLI (was s6+s7) -->
     <section class="slide" id="s5">
       <p class="kicker">
-        <span class="zh">Sealmoss 怎么做</span>
-        <span class="en">How Sealmoss works</span>
+        <span class="zh">Monad · CLI</span>
+        <span class="en">Monad · CLI</span>
       </p>
-      <h2 class="zh">三道硬门，然后才给信封</h2>
-      <h2 class="en">Three hard gates, then the envelope</h2>
+      <h2 class="zh">Moss 跑在 Monad；CLI 把证据送进闸门</h2>
+      <h2 class="en">Moss on Monad; CLI feeds the gate</h2>
       <ul>
-        <li class="zh"><strong style="color:var(--ink)">Simulate 强制</strong> — 没有 Moss simulate 证据（或 offline fixture）就没有 verified</li>
-        <li class="en"><strong style="color:var(--ink)">Simulate mandatory</strong> — no verified run without Moss simulate evidence (or an offline fixture)</li>
-        <li class="zh"><strong style="color:var(--ink)">Warning 即停</strong> — failed-run envelope，<code>capability: null</code></li>
-        <li class="en"><strong style="color:var(--ink)">Stop on Warning</strong> — failed-run envelope, <code>capability: null</code></li>
-        <li class="zh"><strong style="color:var(--ink)">Receipt ↔ Intent</strong> — 有序叶子文本对齐（spender、Kuru minOut / slippage floor 等）</li>
-        <li class="en"><strong style="color:var(--ink)">Receipt ↔ Intent</strong> — ordered leaf texts must match (spender, Kuru minOut / slippage floor, …)</li>
-        <li class="zh">全过才写 verified envelope：Intent + texts + align + Capability + sha256 digest</li>
-        <li class="en">Only then: verified envelope = Intent + texts + align + Capability + sha256 digest</li>
-      </ul>
-      <p class="zh">签名仍在信封之外——人类 / 钱包审阅后再签。Sealmoss 从不签名、从不广播。</p>
-      <p class="en">Signing stays outside the envelope — humans / wallets review, then sign. Sealmoss never signs or broadcasts.</p>
-    </section>
-
-    <!-- 6 Monad -->
-    <section class="slide" id="s6">
-      <p class="kicker">
-        <span class="zh">Monad 相关集成</span>
-        <span class="en">Monad integration</span>
-      </p>
-      <h2 class="zh">Moss 跑在 Monad 上；Sealmoss 是闸门</h2>
-      <h2 class="en">Moss runs on Monad; Sealmoss is the gate</h2>
-      <ul>
-        <li class="zh"><strong style="color:var(--ink)">Chain：</strong>Monad mainnet（chain id 143），经 Moss Runtime + RPC</li>
-        <li class="en"><strong style="color:var(--ink)">Chain:</strong> Monad mainnet (chain id 143) via Moss Runtime + RPC</li>
-        <li class="zh"><strong style="color:var(--ink)">Engine：</strong><code>@themoss/*</code> Registry <code>action</code> 建树；simulator 产出有序 Change / Receipt / Warning</li>
-        <li class="en"><strong style="color:var(--ink)">Engine:</strong> <code>@themoss/*</code> Registry <code>action</code> builds trees; simulator emits ordered Changes / Receipts / Warnings</li>
-        <li class="zh"><strong style="color:var(--ink)">Protocols：</strong>Kuru swap（含嵌套 ERC-20 approve）、WMON wrap / unwrap</li>
-        <li class="en"><strong style="color:var(--ink)">Protocols:</strong> Kuru swap (nested ERC-20 approve), WMON wrap / unwrap</li>
-        <li class="zh"><strong style="color:var(--ink)">Sealmoss：</strong>把 Moss 当 npm 依赖直接调用（不另写一套模拟引擎）；对齐检查是代码里按 <code>protocol.method</code> 挂好的规则列表（不是 LLM 口头说「对齐了」）；输出 verified / failed-run envelope</li>
-        <li class="en"><strong style="color:var(--ink)">Sealmoss:</strong> imports Moss as an npm dependency (does not reimplement simulate); align checks are a coded rule list keyed by <code>protocol.method</code> (not an LLM self-report); emits verified / failed-run envelopes</li>
-      </ul>
-    </section>
-
-    <!-- 7 CLI with Moss -->
-    <section class="slide" id="s7">
-      <p class="kicker">
-        <span class="zh">CLI · 怎么用 Moss</span>
-        <span class="en">CLI · using Moss</span>
-      </p>
-      <h2 class="zh">用 CLI 把 Moss 跑进 Sealmoss 闸门</h2>
-      <h2 class="en">Run Moss through the Sealmoss gate via CLI</h2>
-      <p class="zh">不单独开 Moss CLI。Sealmoss 在进程里调用 <code>@themoss/*</code>：<code>action</code> → <code>simulate</code> → align → envelope。</p>
-      <p class="en">No separate Moss CLI. Sealmoss calls <code>@themoss/*</code> in-process: <code>action</code> → <code>simulate</code> → align → envelope.</p>
-      <ul>
-        <li class="zh"><strong style="color:var(--ink)">离线（评审）</strong>：用已抓好的 fixture，跳过 live RPC，仍走完整闸门</li>
-        <li class="en"><strong style="color:var(--ink)">Offline (judges)</strong>: canned fixtures skip live RPC but still run the full gate</li>
-        <li class="zh"><strong style="color:var(--ink)">Live</strong>：无 <code>--fixture</code> 时 <code>capture</code> 时连 Monad RPC，经 Moss action + simulate</li>
-        <li class="en"><strong style="color:var(--ink)">Live</strong>: omit <code>--fixture</code> or use <code>capture</code> to hit Monad RPC via Moss action + simulate</li>
+        <li class="zh"><strong style="color:var(--ink)">Chain 143</strong> — Moss Runtime + RPC；Kuru swap（含 approve）、WMON wrap / unwrap</li>
+        <li class="en"><strong style="color:var(--ink)">Chain 143</strong> — Moss Runtime + RPC; Kuru swap (nested approve), WMON wrap / unwrap</li>
+        <li class="zh"><strong style="color:var(--ink)">进程内调用</strong> — Sealmoss 把 <code>@themoss/*</code> 当 npm 依赖：<code>action</code> → <code>simulate</code> → align → envelope（不另写模拟引擎）</li>
+        <li class="en"><strong style="color:var(--ink)">In-process</strong> — Sealmoss imports <code>@themoss/*</code>: <code>action</code> → <code>simulate</code> → align → envelope (no reimplemented simulator)</li>
+        <li class="zh"><strong style="color:var(--ink)">离线 / Live</strong> — fixture 跳过 RPC 仍走全闸门；<code>capture</code> 可抓主网再复用</li>
+        <li class="en"><strong style="color:var(--ink)">Offline / Live</strong> — fixtures skip RPC but run the full gate; <code>capture</code> hits mainnet then reuses offline</li>
       </ul>
       <div class="cmds">
-        <code># offline demos (exit 0 / 2 / 3)
-pnpm demo:offline
-pnpm demo:warning
-pnpm demo:min-out</code>
-        <code># same path, explicit CLI
+        <code>pnpm demo:offline   # exit 0
+pnpm demo:warning   # exit 2
+pnpm demo:min-out   # exit 3
 pnpm sealmoss run --intent demos/swap-mon-usdc.json \\
-  --fixture demos/fixtures/kuru-swap-ok.json</code>
-        <code># live Moss on Monad → fixture → reuse offline
+  --fixture demos/fixtures/kuru-swap-ok.json
 pnpm capture:kuru
-pnpm sealmoss run --intent demos/swap-mon-usdc.json \\
-  --fixture demos/fixtures/kuru-swap-captured.json</code>
-        <code># check envelope digest / invariants
 pnpm sealmoss verify-envelope verified-capability.json</code>
       </div>
       <p class="meta zh">exit 0 = verified · 2 = Warning · 3 = align fail · 从不签名 / 广播</p>
       <p class="meta en">exit 0 = verified · 2 = Warning · 3 = align fail · never signs / broadcasts</p>
     </section>
 
-    <!-- 8 Links checklist -->
-    <section class="slide" id="s8">
+    <!-- 6 Close + links (was s8+s11) -->
+    <section class="slide" id="s6">
       <p class="kicker">
-        <span class="zh">提交材料</span>
-        <span class="en">Submission links</span>
+        <span class="zh">试一把</span>
+        <span class="en">Try it</span>
       </p>
-      <h2 class="zh">Demo · GitHub · Pitch</h2>
-      <h2 class="en">Demo · GitHub · Pitch</h2>
+      <h2 class="zh">在人类签名之前，先有可验证信封</h2>
+      <h2 class="en">A verifiable envelope before any human signs</h2>
       <div class="checklist">
-        <div><b>✓</b> <span class="zh">Demo（fixture-only Web）</span><span class="en">Demo (fixture-only web)</span> — <a href="https://sm.limlamleen.com" target="_blank" rel="noopener">sm.limlamleen.com</a></div>
+        <div><b>✓</b> Demo — <a href="https://sm.limlamleen.com" target="_blank" rel="noopener">sm.limlamleen.com</a></div>
         <div><b>✓</b> GitHub — <a href="https://github.com/KarlLeen/formoss" target="_blank" rel="noopener">github.com/KarlLeen/formoss</a></div>
-        <div><b>✓</b> Pitch Deck — <a href="/pitch">/pitch</a></div>
-        <div><b>✓</b> Workbench — <a href="/">/</a></div>
+        <div><b>✓</b> Pitch — <a href="/pitch">/pitch</a> · Workbench — <a href="/">/</a></div>
       </div>
-      <p class="lede zh" style="margin-top:1.3rem">建议路径：Load happy path → Run → Download envelope；再试 warning / min-out，看 capability 被省略。</p>
-      <p class="lede en" style="margin-top:1.3rem">Try Load happy path → Run → Download envelope; then warning / min-out to see capability omitted.</p>
-      <div class="links">
-        <a class="cta" href="https://sm.limlamleen.com" target="_blank" rel="noopener"><span class="zh">启动 Demo</span><span class="en">Launch demo</span></a>
-        <a class="cta ghost" href="https://github.com/KarlLeen/formoss" target="_blank" rel="noopener">GitHub</a>
-      </div>
-    </section>
-
-    <!-- 9 Lightweight vs full platform -->
-    <section class="slide" id="s9">
-      <p class="kicker">
-        <span class="zh">为什么轻量</span>
-        <span class="en">Why lightweight</span>
-      </p>
-      <h2 class="zh">一件事：给 Moss 证据盖章 — 可嵌入任何 Agent</h2>
-      <h2 class="en">One job: seal Moss evidence — embeddable in any Agent</h2>
-      <p class="zh">同类完整平台（如带 Agent 控制台、攻击演示、签名门禁 UI 的信任层）解决「端到端产品体验」。Sealmoss 刻意只做<strong>可搬运的闸门</strong>：</p>
-      <p class="en">Full platforms (Agent console, attack demos, signing-gate UI) own the end-to-end product. Sealmoss deliberately ships a <strong>portable gate</strong>:</p>
-      <ul>
-        <li class="zh"><strong style="color:var(--ink)">无 LLM 在环</strong> — Intent 是声明式 JSON；裁决是代码规则，不托管 StepFun / 工具预算 / Agent harness</li>
-        <li class="en"><strong style="color:var(--ink)">No LLM in the loop</strong> — Intent is declared JSON; verdicts are coded rules — no hosted model, tool budget, or Agent harness</li>
-        <li class="zh"><strong style="color:var(--ink)">库 + CLI 优先</strong> — <code>@sealmoss/core</code> / <code>sealmoss run</code> 可塞进既有 MCP Agent、脚本或别人的前端；不是必须换一整套 SSR 控制台</li>
-        <li class="en"><strong style="color:var(--ink)">Library + CLI first</strong> — drop <code>@sealmoss/core</code> / <code>sealmoss run</code> into an existing MCP Agent, script, or another UI — no forced SSR console</li>
-        <li class="zh"><strong style="color:var(--ink)">离线可复现</strong> — fixture demo 约 45s、无 RPC，评审与 CI 稳定；live capture 可选</li>
-        <li class="en"><strong style="color:var(--ink)">Offline-reproducible</strong> — ~45s fixture demos, no RPC for judges/CI; live capture optional</li>
-        <li class="zh"><strong style="color:var(--ink)">审计面小</strong> — 核心是 align 规则表 + envelope digest，而不是「平台 + Agent + 演示攻击」整栈</li>
-        <li class="en"><strong style="color:var(--ink)">Small audit surface</strong> — align rule table + envelope digest, not a full platform/Agent/attack-demo stack</li>
-      </ul>
-      <div class="flow">
-        <span class="zh">完整控制台 = 体验层 · Sealmoss = 可嵌入的证据闸门（可被控制台调用，也可单独给 CLI Agent 用）</span>
-        <span class="en">Full console = experience layer · Sealmoss = embeddable evidence gate (callable by a console, or alone by a CLI Agent)</span>
-      </div>
-    </section>
-
-    <!-- 10 Boundary -->
-    <section class="slide" id="s10">
-      <p class="kicker">
-        <span class="zh">硬边界</span>
-        <span class="en">Hard boundary</span>
-      </p>
-      <h2 class="zh">Seal on Moss Receipts — 不是扫描器</h2>
-      <h2 class="en">Seal on Moss Receipts — not a scanner</h2>
-      <ul>
-        <li class="zh">不是 Blockaid 式钱包扫链</li>
-        <li class="en">Not Blockaid-style wallet scanning</li>
-        <li class="zh">不是 key vault / signer / broadcaster</li>
-        <li class="en">Not a key vault, signer, or broadcaster</li>
-        <li class="zh">不是 MEV 保护器</li>
-        <li class="en">Not an MEV protector</li>
-        <li class="zh">托管 Demo 默认 fixture-only；live RPC 仅本地 CLI / 显式环境开关</li>
-        <li class="en">Hosted demo is fixture-only; live RPC stays on local CLI / explicit env flag</li>
-      </ul>
-    </section>
-
-    <!-- 11 Close -->
-    <section class="slide" id="s11">
-      <p class="kicker">
-        <span class="zh">结尾</span>
-        <span class="en">Closing</span>
-      </p>
-      <h2 class="zh">Moss 提供证据。Sealmoss 强迫 Agent 用它。</h2>
-      <h2 class="en">Moss provides evidence. Sealmoss forces Agents to use it.</h2>
-      <p class="lede zh">面向 Monad 上的 Agent 交易工作台——在人类签名之前，先有可验证信封。</p>
-      <p class="lede en">Built for Monad Agent trading workbenches — a verifiable envelope before any human signs.</p>
+      <p class="lede zh" style="margin-top:1.1rem">建议：Load happy path → Run → Download；再试 warning / min-out，看 capability 被省略。</p>
+      <p class="lede en" style="margin-top:1.1rem">Try Load happy path → Run → Download; then warning / min-out to see capability omitted.</p>
       <div class="links">
         <a class="cta" href="https://sm.limlamleen.com" target="_blank" rel="noopener">Demo</a>
         <a class="cta ghost" href="https://github.com/KarlLeen/formoss" target="_blank" rel="noopener">GitHub</a>
         <a class="cta ghost" href="/">Workbench</a>
       </div>
-      <p class="meta">Sealmoss · Monad Playground · never signs · never broadcasts</p>
+      <p class="meta">Sealmoss · never signs · never broadcasts</p>
     </section>
   </main>
   <script>
