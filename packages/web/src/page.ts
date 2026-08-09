@@ -120,7 +120,7 @@ export const pageHtml = `<!doctype html>
   <div class="app">
     <h1 class="brand">Sealmoss</h1>
     <p class="lede">Seal on Moss Receipts: simulate is mandatory, Warnings stop the flow, and ordered leaf texts must align with intent before any unsigned Capability is nested. Not a wallet scanner, key vault, or MEV protector.</p>
-    <p class="note" id="host-note">Hosted / default demo mode is <strong>fixture-only</strong> (no live Monad RPC). Live simulate stays on local CLI or <code>SEALMOSS_WEB_ALLOW_LIVE=1</code>.</p>
+    <p class="note" id="host-note">Hosted / default demo mode is <strong>fixture-only</strong> (no live Monad RPC). Live simulate stays on local CLI or <code>SEALMOSS_WEB_ALLOW_LIVE=1</code>. <a href="/pitch" style="color:var(--accent)">Pitch deck →</a></p>
     <div class="grid">
       <section>
         <h2>Intent</h2>

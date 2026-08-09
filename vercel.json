@@ -9,6 +9,11 @@
   },
   "rewrites": [
     { "source": "/", "destination": "/api/handler?sealmossPath=/" },
+    { "source": "/pitch", "destination": "/api/handler?sealmossPath=/pitch" },
+    {
+      "source": "/pitch/",
+      "destination": "/api/handler?sealmossPath=/pitch"
+    },
     {
       "source": "/api/catalog",
       "destination": "/api/handler?sealmossPath=/api/catalog"

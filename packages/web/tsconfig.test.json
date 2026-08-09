@@ -13,6 +13,7 @@
     "src/app.ts",
     "src/demosIo.ts",
     "src/page.ts",
+    "src/pitch.ts",
     "src/runPolicy.ts"
   ]
 }

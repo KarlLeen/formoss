@@ -9,6 +9,7 @@ import {
   resolveFixture,
 } from "./demosIo.js";
 import { pageHtml } from "./page.js";
+import { pitchHtml } from "./pitch.js";
 import { assertRunAllowed, webAllowLiveFromEnv } from "./runPolicy.js";
 
 export const MAX_BODY_BYTES = Number(process.env.SEALMOSS_MAX_BODY ?? 262_144);
@@ -151,6 +152,14 @@ export async function dispatch(
   if (req.method === "GET" && (pathname === "/" || pathname === "")) {
     res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
     res.end(pageHtml);
+    return;
+  }
+  if (
+    req.method === "GET" &&
+    (pathname === "/pitch" || pathname === "/pitch/" || pathname === "/pitch.html")
+  ) {
+    res.writeHead(200, { "content-type": "text/html; charset=utf-8" });
+    res.end(pitchHtml);
     return;
   }
   if (req.method === "GET" && pathname === "/api/catalog") {

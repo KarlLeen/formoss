@@ -98,6 +98,8 @@ pnpm web
 Open `http://localhost:5173`. Buttons load happy / align-fail / warning / min-out / approve-bad from `demos/` (always with a fixture).  
 `POST /api/run` is **fixture-only** by default. Live RPC requires `SEALMOSS_WEB_ALLOW_LIVE=1` **and** body/UI `live: true`.
 
+Pitch deck (demo + GitHub + Monad integration): `/pitch` — production https://sm.limlamleen.com/pitch
+
 ### Deploy (Vercel)
 
 Hosted Web is **fixture-only** (same offline demos as `pnpm demo:offline` / warning / min-out). Do **not** set `SEALMOSS_WEB_ALLOW_LIVE` on Vercel.
