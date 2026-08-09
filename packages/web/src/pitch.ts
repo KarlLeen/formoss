@@ -145,13 +145,21 @@ export const pitchHtml = `<!doctype html>
       font-family: var(--mono);
       font-size: .78rem;
     }
-    .flow span {
+    .flow span, .cmds code {
       display: block;
       background: rgba(255,255,255,.45);
       border: 1px solid var(--line);
       padding: .65rem .8rem;
       color: var(--ink);
     }
+    .cmds {
+      display: grid;
+      gap: .45rem;
+      margin: 1rem 0 0;
+      font-family: var(--mono);
+      font-size: .72rem;
+    }
+    .cmds code { white-space: pre-wrap; word-break: break-word; }
     .checklist {
       display: grid;
       gap: .5rem;
@@ -276,7 +284,7 @@ export const pitchHtml = `<!doctype html>
   <nav class="nav" aria-label="Slides">
     <a href="#s1">1</a><a href="#s2">2</a><a href="#s3">3</a>
     <a href="#s4">4</a><a href="#s5">5</a><a href="#s6">6</a>
-    <a href="#s7">7</a><a href="#s8">8</a><a href="#s9">9</a>
+    <a href="#s7">7</a><a href="#s8">8</a><a href="#s9">9</a><a href="#s10">10</a>
   </nav>
   <main class="deck">
 
@@ -426,8 +434,43 @@ export const pitchHtml = `<!doctype html>
       </ul>
     </section>
 
-    <!-- 7 Links checklist -->
+    <!-- 7 CLI with Moss -->
     <section class="slide" id="s7">
+      <p class="kicker">
+        <span class="zh">CLI · 怎么用 Moss</span>
+        <span class="en">CLI · using Moss</span>
+      </p>
+      <h2 class="zh">用 CLI 把 Moss 跑进 Sealmoss 闸门</h2>
+      <h2 class="en">Run Moss through the Sealmoss gate via CLI</h2>
+      <p class="zh">不单独开 Moss CLI。Sealmoss 在进程里调用 <code>@themoss/*</code>：<code>action</code> → <code>simulate</code> → align → envelope。</p>
+      <p class="en">No separate Moss CLI. Sealmoss calls <code>@themoss/*</code> in-process: <code>action</code> → <code>simulate</code> → align → envelope.</p>
+      <ul>
+        <li class="zh"><strong style="color:var(--ink)">离线（评审）</strong>：用已抓好的 fixture，跳过 live RPC，仍走完整闸门</li>
+        <li class="en"><strong style="color:var(--ink)">Offline (judges)</strong>: canned fixtures skip live RPC but still run the full gate</li>
+        <li class="zh"><strong style="color:var(--ink)">Live</strong>：无 <code>--fixture</code> 时 <code>capture</code> 时连 Monad RPC，经 Moss action + simulate</li>
+        <li class="en"><strong style="color:var(--ink)">Live</strong>: omit <code>--fixture</code> or use <code>capture</code> to hit Monad RPC via Moss action + simulate</li>
+      </ul>
+      <div class="cmds">
+        <code># offline demos (exit 0 / 2 / 3)
+pnpm demo:offline
+pnpm demo:warning
+pnpm demo:min-out</code>
+        <code># same path, explicit CLI
+pnpm sealmoss run --intent demos/swap-mon-usdc.json \\
+  --fixture demos/fixtures/kuru-swap-ok.json</code>
+        <code># live Moss on Monad → fixture → reuse offline
+pnpm capture:kuru
+pnpm sealmoss run --intent demos/swap-mon-usdc.json \\
+  --fixture demos/fixtures/kuru-swap-captured.json</code>
+        <code># check envelope digest / invariants
+pnpm sealmoss verify-envelope verified-capability.json</code>
+      </div>
+      <p class="meta zh">exit 0 = verified · 2 = Warning · 3 = align fail · 从不签名 / 广播</p>
+      <p class="meta en">exit 0 = verified · 2 = Warning · 3 = align fail · never signs / broadcasts</p>
+    </section>
+
+    <!-- 8 Links checklist -->
+    <section class="slide" id="s8">
       <p class="kicker">
         <span class="zh">提交材料</span>
         <span class="en">Submission links</span>
@@ -448,8 +491,8 @@ export const pitchHtml = `<!doctype html>
       </div>
     </section>
 
-    <!-- 8 Boundary -->
-    <section class="slide" id="s8">
+    <!-- 9 Boundary -->
+    <section class="slide" id="s9">
       <p class="kicker">
         <span class="zh">硬边界</span>
         <span class="en">Hard boundary</span>
@@ -468,8 +511,8 @@ export const pitchHtml = `<!doctype html>
       </ul>
     </section>
 
-    <!-- 9 Close -->
-    <section class="slide" id="s9">
+    <!-- 10 Close -->
+    <section class="slide" id="s10">
       <p class="kicker">
         <span class="zh">结尾</span>
         <span class="en">Closing</span>
