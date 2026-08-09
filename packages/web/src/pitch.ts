@@ -320,6 +320,8 @@ export const pitchHtml = `<!doctype html>
         <span>Intent → Moss action → Moss simulate → Sealmoss align → verified envelope</span>
         <span class="zh">失败 → failed-run，capability: null（不能软忽略后还拿走可签树）</span>
         <span class="en">Fail → failed-run, capability: null (no soft-ignore path to a signable tree)</span>
+        <span class="zh">凡走 Moss（action → simulate → Receipt）的路径，都能在交给钱包之前嵌一层 Sealmoss</span>
+        <span class="en">Any path already on Moss (action → simulate → Receipt) can nest Sealmoss before the wallet</span>
       </div>
       <p class="meta"><a href="https://github.com/nishuzumi/moss" target="_blank" rel="noopener">github.com/nishuzumi/moss</a></p>
     </section>
@@ -369,20 +371,24 @@ export const pitchHtml = `<!doctype html>
     <!-- 4 Lightweight + boundary (was s9+s10) -->
     <section class="slide" id="s4">
       <p class="kicker">
-        <span class="zh">为什么轻量 · 硬边界</span>
-        <span class="en">Why lightweight · hard boundary</span>
+        <span class="zh">为什么轻量 · 谁能用</span>
+        <span class="en">Why lightweight · who can use it</span>
       </p>
-      <h2 class="zh">可嵌入的证据闸门 — 不是整套控制台</h2>
-      <h2 class="en">An embeddable evidence gate — not a full console</h2>
-      <p class="zh">同类完整平台做端到端体验（Agent 控制台、攻击演示、签名门禁 UI）。Sealmoss 只做<strong>可搬运的闸门</strong>：</p>
-      <p class="en">Full platforms own the end-to-end experience (Agent console, attack demos, signing-gate UI). Sealmoss ships only a <strong>portable gate</strong>:</p>
+      <h2 class="zh">凡用 Moss，都可加上 Sealmoss — 而且很轻</h2>
+      <h2 class="en">If you use Moss, you can add Sealmoss — and it stays light</h2>
+      <p class="zh">已有 Moss 管线不必换控制台：在「Capability 交给钱包 / 下一步」之前嵌一层闸门即可。同类完整平台做端到端体验；Sealmoss 只做<strong>可搬运的闸门</strong>：</p>
+      <p class="en">Keep your Moss pipeline — nest a gate before the Capability hits a wallet or the next step. Full platforms own the end-to-end experience; Sealmoss ships only a <strong>portable gate</strong>:</p>
       <ul>
-        <li class="zh"><strong style="color:var(--ink)">无 LLM 在环</strong> — Intent 是 JSON；裁决是按 <code>protocol.method</code> 挂的规则表，不托管模型 / Agent harness</li>
-        <li class="en"><strong style="color:var(--ink)">No LLM in the loop</strong> — Intent is JSON; verdicts are a coded rule list by <code>protocol.method</code> — no hosted model or Agent harness</li>
+        <li class="zh"><strong style="color:var(--ink)">无 LLM 在环</strong> — Intent 是 JSON；裁决是规则表，不托管模型 / Agent harness</li>
+        <li class="en"><strong style="color:var(--ink)">No LLM in the loop</strong> — Intent is JSON; verdicts are coded rules — no hosted model or Agent harness</li>
         <li class="zh"><strong style="color:var(--ink)">库 + CLI</strong> — <code>@sealmoss/core</code> / <code>sealmoss run</code> 可塞进既有 MCP、脚本或别人的 UI</li>
         <li class="en"><strong style="color:var(--ink)">Library + CLI</strong> — drop into an existing MCP, script, or another UI</li>
-        <li class="zh"><strong style="color:var(--ink)">离线可复现 · 审计面小</strong> — fixture 无 RPC；核心是 align + envelope digest，不是「平台 + Agent + 演示」整栈</li>
-        <li class="en"><strong style="color:var(--ink)">Offline + small audit surface</strong> — fixtures need no RPC; core is align + envelope digest, not a full platform stack</li>
+        <li class="zh"><strong style="color:var(--ink)">离线可复现 · 审计面小</strong> — fixture 无 RPC；核心是 align + envelope digest</li>
+        <li class="en"><strong style="color:var(--ink)">Offline + small audit surface</strong> — fixtures need no RPC; core is align + envelope digest</li>
+        <li class="zh"><strong style="color:var(--ink)">需要 Intent</strong> — 闸门比的是 Intent ↔ Receipt；参数需声明式 Intent，或能从现有参数映射</li>
+        <li class="en"><strong style="color:var(--ink)">Needs Intent</strong> — the gate compares Intent ↔ Receipt; declare Intent or map from existing params</li>
+        <li class="zh"><strong style="color:var(--ink)">按 protocol.method 覆盖</strong> — 已支持如 Kuru swap、WMON wrap/unwrap；新方法补几条 align 规则即可，不是装包即万能</li>
+        <li class="en"><strong style="color:var(--ink)">Covered by protocol.method</strong> — e.g. Kuru swap, WMON wrap/unwrap; new methods need a few align rules — not universal out of the box</li>
         <li class="zh"><strong style="color:var(--ink)">不是</strong>扫链器 / key vault / signer / broadcaster / MEV 保护；托管 Demo 默认 fixture-only</li>
         <li class="en"><strong style="color:var(--ink)">Not</strong> a scanner, key vault, signer, broadcaster, or MEV protector; hosted demo is fixture-only</li>
       </ul>
