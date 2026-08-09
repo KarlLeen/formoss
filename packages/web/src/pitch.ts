@@ -421,8 +421,8 @@ export const pitchHtml = `<!doctype html>
         <li class="en"><strong style="color:var(--ink)">Engine:</strong> <code>@themoss/*</code> Registry <code>action</code> builds trees; simulator emits ordered Changes / Receipts / Warnings</li>
         <li class="zh"><strong style="color:var(--ink)">Protocols：</strong>Kuru swap（含嵌套 ERC-20 approve）、WMON wrap / unwrap</li>
         <li class="en"><strong style="color:var(--ink)">Protocols:</strong> Kuru swap (nested ERC-20 approve), WMON wrap / unwrap</li>
-        <li class="zh"><strong style="color:var(--ink)">Sealmoss：</strong>把 Moss 当库来调用；用写死的、按协议列出的 align rules（不是 LLM 自述）核对 Receipt ↔ Intent；输出 verified / failed-run envelope</li>
-        <li class="en"><strong style="color:var(--ink)">Sealmoss:</strong> calls Moss as a library; checks Receipt ↔ Intent with fixed, protocol-listed align rules (not an LLM self-report); emits verified / failed-run envelopes</li>
+        <li class="zh"><strong style="color:var(--ink)">Sealmoss：</strong>把 Moss 当 npm 依赖直接调用（不另写一套模拟引擎）；对齐检查是代码里按 <code>protocol.method</code> 挂好的规则列表（不是 LLM 口头说「对齐了」）；输出 verified / failed-run envelope</li>
+        <li class="en"><strong style="color:var(--ink)">Sealmoss:</strong> imports Moss as an npm dependency (does not reimplement simulate); align checks are a coded rule list keyed by <code>protocol.method</code> (not an LLM self-report); emits verified / failed-run envelopes</li>
       </ul>
     </section>
 
